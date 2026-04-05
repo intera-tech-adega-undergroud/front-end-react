@@ -2,185 +2,158 @@ import {
   Bar,
   BarChart,
   CartesianGrid,
-  Cell,
   ResponsiveContainer,
   Tooltip,
   XAxis,
   YAxis,
 } from 'recharts'
+import { TrendingUp } from 'lucide-react'
+import avatarPadrao from '../assets/avatarPadrao.svg'
 import './Dashboard.css'
 
-const defaultDailyData = [
-  { dia: '01/03', valor: 2100 },
-  { dia: '02/03', valor: 2900 },
-  { dia: '03/03', valor: 2400 },
-  { dia: '04/03', valor: 3500 },
-  { dia: '05/03', valor: 3000 },
-  { dia: '06/03', valor: 3800 },
-  { dia: '07/03', valor: 3300 },
+const chartData = [
+  { dia: 1, valor: 2300 },
+  { dia: 2, valor: 3150 },
+  { dia: 3, valor: 1800 },
+  { dia: 4, valor: 4100 },
+  { dia: 5, valor: 3650 },
+  { dia: 6, valor: 2900 },
+  { dia: 7, valor: 2600 },
+  { dia: 8, valor: 4450 },
+  { dia: 9, valor: 3800 },
+  { dia: 10, valor: 3350 },
+  { dia: 11, valor: 4700 },
+  { dia: 12, valor: 5250 },
+  { dia: 13, valor: 3900 },
+  { dia: 14, valor: 6100 },
+  { dia: 15, valor: 4300 },
+  { dia: 16, valor: 5200 },
+  { dia: 17, valor: 2800 },
+  { dia: 18, valor: 4900 },
+  { dia: 19, valor: 3450 },
+  { dia: 20, valor: 5600 },
+  { dia: 21, valor: 4100 },
 ]
 
-const defaultWeeklyData = [
-  { semana: 'S1', vendas: 12300 },
-  { semana: 'S2', vendas: 14700 },
-  { semana: 'S3', vendas: 13600 },
-  { semana: 'S4', vendas: 16900 },
+const rankingData = [
+  { nome: 'E. Menezes', valor: 'R$ 6.228', avatar: avatarPadrao },
+  { nome: 'A. Santos', valor: 'R$ 4.233', avatar: avatarPadrao },
 ]
 
-const defaultRanking = [
-  { nome: 'Larissa', valor: 'R$ 16.900' },
-  { nome: 'Bruno', valor: 'R$ 14.700' },
-  { nome: 'Camila', valor: 'R$ 13.600' },
-]
+const currencyFormatter = (valor) => `R$ ${Number(valor).toLocaleString('pt-BR')}`
 
-const barColors = ['#7FFF9A', '#5DF47D', '#4FE26E', '#3ECE62', '#35BE58', '#2EAF50', '#279F47']
+function MonthTick({ x, y, payload }) {
+  return (
+    <g transform={`translate(${x},${y})`}>
+      <text x={0} y={0} dy={10} textAnchor="middle" fill="#A8B0B9" fontSize="10">
+        {payload.value}
+      </text>
+      <text x={0} y={0} dy={22} textAnchor="middle" fill="#77808A" fontSize="9">
+        Set
+      </text>
+    </g>
+  )
+}
 
-function DashboardPage({
-  dailyData = defaultDailyData,
-  weeklyData = defaultWeeklyData,
-  ranking = defaultRanking,
-  onCloseCash,
-}) {
+function DashboardPage() {
   return (
     <section className="dashboard-screen">
-      <div className="dashboard-grid">
-        <div className="dashboard-left">
-          <article className="dashboard-card">
-            <div className="dashboard-card__header">
-              <h2 className="dashboard-title">Vendas Diarias</h2>
-            </div>
+      <h1 className="dashboard-page-title">Dashboard</h1>
 
-            <div className="dashboard-chart-wrap">
-              <ResponsiveContainer width="100%" height={220}>
-                <BarChart data={dailyData} barSize={34}>
-                  <defs>
-                    <linearGradient id="dailyBarGradient" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="0%" stopColor="#8DFFB0" />
-                      <stop offset="100%" stopColor="#22A542" />
-                    </linearGradient>
-                  </defs>
-                  <CartesianGrid vertical={false} stroke="#2A2D33" strokeDasharray="4 4" />
-                  <XAxis dataKey="dia" stroke="#A8B0B9" tickLine={false} axisLine={false} tick={{ fontSize: 10 }} />
-                  <YAxis stroke="#A8B0B9" tickLine={false} axisLine={false} tick={{ fontSize: 10 }} />
-                  <Tooltip
-                    cursor={{ fill: 'rgba(255, 255, 255, 0.04)' }}
-                    contentStyle={{
-                      backgroundColor: '#16181D',
-                      border: '1px solid #2A2D33',
-                      borderRadius: '8px',
-                      color: '#FFFFFF',
-                    }}
-                    formatter={(value) => [`R$ ${Number(value).toLocaleString('pt-BR')}`, 'Vendas']}
-                  />
-                  <Bar dataKey="valor" radius={[6, 6, 0, 0]}>
-                    {dailyData.map((entry, index) => (
-                      <Cell
-                        key={`${entry.dia}-${index}`}
-                        fill={index === dailyData.length - 1 ? 'url(#dailyBarGradient)' : barColors[index % barColors.length]}
-                      />
-                    ))}
-                  </Bar>
-                </BarChart>
-              </ResponsiveContainer>
-            </div>
-          </article>
+      <section className="dashboard-metrics">
+        <article className="dashboard-card metric-card">
+          <p className="metric-title">Vendas do Mes</p>
+          <h2 className="metric-value">R$ 12.870</h2>
+          <p className="metric-subtext">
+            <TrendingUp size={14} />
+            977 vendidos
+          </p>
+        </article>
 
-          <article className="dashboard-card">
-            <div className="dashboard-card__header">
-              <h2 className="dashboard-title">Vendas Semanais</h2>
-            </div>
+        <article className="dashboard-card metric-card">
+          <p className="metric-title">Faturamento do Dia</p>
+          <h2 className="metric-value">R$ 690</h2>
+          <p className="metric-subtext">
+            <TrendingUp size={14} />
+            56 produtos vendidos
+          </p>
+        </article>
 
-            <div className="dashboard-chart-wrap">
-              <ResponsiveContainer width="100%" height={220}>
-                <BarChart data={weeklyData} barSize={36}>
-                  <defs>
-                    <linearGradient id="weeklyBarGradient" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="0%" stopColor="#8DFFB0" />
-                      <stop offset="100%" stopColor="#20A140" />
-                    </linearGradient>
-                  </defs>
-                  <CartesianGrid vertical={false} stroke="#2A2D33" strokeDasharray="4 4" />
-                  <XAxis dataKey="semana" stroke="#A8B0B9" tickLine={false} axisLine={false} tick={{ fontSize: 10 }} />
-                  <YAxis stroke="#A8B0B9" tickLine={false} axisLine={false} tick={{ fontSize: 10 }} />
-                  <Tooltip
-                    cursor={{ fill: 'rgba(255, 255, 255, 0.04)' }}
-                    contentStyle={{
-                      backgroundColor: '#16181D',
-                      border: '1px solid #2A2D33',
-                      borderRadius: '8px',
-                      color: '#FFFFFF',
-                    }}
-                    formatter={(value) => [`R$ ${Number(value).toLocaleString('pt-BR')}`, 'Vendas']}
-                  />
-                  <Bar dataKey="vendas" fill="url(#weeklyBarGradient)" radius={[6, 6, 0, 0]} />
-                </BarChart>
-              </ResponsiveContainer>
-            </div>
-          </article>
+        <article className="dashboard-card metric-card metric-ranking">
+          <p className="metric-title">Ranking por Vendedor</p>
+          <ul className="top-ranking-list">
+            {rankingData.map((vendedor) => (
+              <li key={vendedor.nome}>
+                <div className="ranking-profile">
+                  <img src={vendedor.avatar} alt={`Avatar de ${vendedor.nome}`} />
+                  <span>{vendedor.nome}</span>
+                </div>
+                <div className="ranking-status">
+                  <strong>{vendedor.valor}</strong>
+                  <TrendingUp size={14} />
+                </div>
+              </li>
+            ))}
+          </ul>
+        </article>
+      </section>
+
+      <section className="dashboard-card filter-section">
+        <label className="filter-block">
+          <span>Metrica</span>
+          <select defaultValue="totais">
+            <option value="totais">Vendas Totais</option>
+            <option value="lucro">Lucro Apenas</option>
+          </select>
+        </label>
+
+        <label className="filter-block">
+          <span>Periodo</span>
+          <select defaultValue="este-mes">
+            <option value="este-mes">Este Mes</option>
+            <option value="mes-passado">Mes Passado</option>
+            <option value="trimestral">Trimestral</option>
+          </select>
+        </label>
+
+        <label className="filter-block">
+          <span>Data Personalizada</span>
+          <input type="text" defaultValue="05/07/2023 - 23/01/2023" />
+        </label>
+      </section>
+
+      <section className="dashboard-card detailed-chart-card">
+        <h2 className="detailed-chart-title">Visao Detalhada de Vendas Diarias (Este Mes)</h2>
+        <div className="detailed-chart-wrap">
+          <ResponsiveContainer width="100%" height={360}>
+            <BarChart data={chartData} margin={{ top: 8, right: 4, left: -14, bottom: 26 }}>
+              <CartesianGrid vertical={false} stroke="#242A31" strokeDasharray="4 4" />
+              <XAxis dataKey="dia" tickLine={false} axisLine={false} tick={<MonthTick />} interval={0} />
+              <YAxis
+                domain={[0, 7000]}
+                ticks={[0, 1000, 2000, 3000, 4000, 5000, 6000, 7000]}
+                stroke="#8F98A3"
+                tickLine={false}
+                axisLine={false}
+                tick={{ fontSize: 11 }}
+                tickFormatter={currencyFormatter}
+              />
+              <Tooltip
+                cursor={{ fill: 'rgba(255,255,255,0.03)' }}
+                contentStyle={{
+                  background: '#101317',
+                  border: '1px solid #2B3139',
+                  borderRadius: '10px',
+                  color: '#FFFFFF',
+                }}
+                formatter={(value) => [currencyFormatter(value), 'Vendas do Dia']}
+                labelFormatter={(label) => `Dia ${label} - Set`}
+              />
+              <Bar dataKey="valor" fill="#3EDC67" radius={[8, 8, 0, 0]} maxBarSize={24} />
+            </BarChart>
+          </ResponsiveContainer>
         </div>
-
-        <div className="dashboard-right">
-          <aside className="dashboard-side-card dashboard-filter-card">
-            <div className="dashboard-filters">
-              <label className="dashboard-filter-item">
-                <span>Vendas Totais</span>
-                <select defaultValue="vendas">
-                  <option value="vendas">Vendas Totais</option>
-                  <option value="lucro">Lucro</option>
-                </select>
-              </label>
-
-              <label className="dashboard-filter-item">
-                <span>Este mes</span>
-                <select defaultValue="mes-atual">
-                  <option value="mes-atual">Este mes</option>
-                  <option value="ultimo-mes">Ultimo mes</option>
-                  <option value="trimestre">Ultimo trimestre</option>
-                </select>
-              </label>
-            </div>
-          </aside>
-
-          <aside className="dashboard-side-card">
-            <div className="dashboard-ranking">
-              <h3>Ranking por Vendedor</h3>
-              <ul>
-                {ranking.map((item) => (
-                  <li key={item.nome}>
-                    <span>{item.nome}</span>
-                    <strong>{item.valor}</strong>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          </aside>
-
-          <aside className="dashboard-side-card">
-            <div className="dashboard-close-head">
-              <h3>Fechamento de Caixa</h3>
-            </div>
-            <form className="dashboard-form" onSubmit={(event) => event.preventDefault()}>
-              <label>
-                <span>Cliente</span>
-                <input type="text" placeholder="Nome do cliente" />
-              </label>
-
-              <label>
-                <span>Valor</span>
-                <input type="number" placeholder="R$ 0,00" />
-              </label>
-
-              <label>
-                <span>Observacoes</span>
-                <textarea rows="4" placeholder="Detalhes do fechamento" />
-              </label>
-
-              <button type="button" className="dashboard-close-btn" onClick={onCloseCash}>
-                Fechar Caixa
-              </button>
-            </form>
-          </aside>
-        </div>
+      </section>
       </div>
     </section>
   )

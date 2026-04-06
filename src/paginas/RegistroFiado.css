@@ -1,0 +1,172 @@
+.conteudo{
+    background-color: #0f1115;
+    padding: 25px;
+    min-height: 100%;
+    box-sizing: border-box;
+    color: #ffffff;
+}
+
+.titulo{
+    font-size: 1.7rem;
+    font-weight: 700;
+    margin-bottom: 20px;
+}
+
+.filtros {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 20px;
+}
+
+/* Status */
+.statusFiado {
+    display: flex;
+    background: #2a2a2b7a;
+    border-radius: 10px;
+    padding: 5px;
+}
+
+.statusFiado button {
+    background: transparent;
+    border: none;
+    color: #ccc;
+    padding: 10px 20px;
+    cursor: pointer;
+    border-radius: 8px;
+}
+
+.statusFiado button.active {
+    background: linear-gradient(180deg, #5fff8aaa 0%, #24b94b 100%);
+    color: #fff;
+}
+
+/* Data */
+.filtroData {
+    font-size: small;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background:  #2a2a2b61;
+    padding: 5px;
+    padding-left: 15px;
+    padding-right: 15px;
+    border-radius: 10px;
+    border: solid 1px #2a2a2b;
+    color: #ccc;
+}
+
+.filtroData input {
+    background: transparent;
+    border: none;
+    color: #fff;
+    outline: none;
+}
+
+.valorAberto{
+    display: flex;
+    flex-direction: column;
+    background: linear-gradient(180deg, #5fff8a25 0%, #24b94c50 100%);
+    border-radius: 5px;
+    padding-left: 80px;
+    padding-right: 10px;
+    padding-top: 5px;
+    padding-bottom: 10px;
+    border-bottom: solid 3px #02f347ea;
+}
+
+.totalAberto{
+    font-size: small;
+    color: #9dad9d8c;
+}
+
+.valor{
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 5px;
+}
+
+p{
+    margin: 2px;
+}
+
+body {
+  background: #0f1115;
+  color: white;
+  font-family: Arial, sans-serif;
+}
+
+.tabela-container {
+  background: #161a2086;
+  border-radius: 10px;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+th {
+  text-align: left;
+  padding: 12px;
+  color: #aaa;
+}
+
+td {
+  padding: 15px 12px;
+  border-top: 1px solid #2a2f36;
+}
+
+
+/* STATUS */
+.status {
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 14px;
+}
+
+.status.aberto {
+  background: #3a2f0b;
+  color: #f5a623;
+}
+
+.status.pago {
+  background: #0d3b1f;
+  color: #2ecc71;
+}
+
+/* BOTÃO */
+.btn-cobrar {
+  background: #1f7a3f;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.btn-cobrar:hover {
+  background: #28a745;
+}
+
+/* PAGINAÇÃO */
+.paginacao {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 20px;
+}
+
+.paginacao span {
+  margin: 0 5px;
+  padding: 10px 15px;
+  background: #2a2f36;
+  border-radius: 4px;
+
+  cursor: pointer;
+}
+
+.paginacao .ativo {
+  background: #1f7a3f;
+  border: solid 1px #28a745;
+}

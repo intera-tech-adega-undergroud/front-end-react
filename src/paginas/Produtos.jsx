@@ -171,6 +171,8 @@ function ProductsPage() {
   }
 
   return (
+    <>
+  
     <div className="produtos-container">
       <h1>Produtos</h1>
 
@@ -324,6 +326,7 @@ function ProductsPage() {
         </div>
       )}
     </div>
+    </>
   );
 }
 

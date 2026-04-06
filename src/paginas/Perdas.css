@@ -1,0 +1,12 @@
+.perdas-container {
+  background: #0f1115;
+  color: white;
+  padding: 40px;
+  min-height: 100vh;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+.prejuizo {
+  color: #ff4d4f;
+  font-weight: bold;
+}

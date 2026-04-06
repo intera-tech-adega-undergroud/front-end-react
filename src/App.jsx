@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { Navigate, Route, Routes } from 'react-router-dom'
 import LoginPage from './paginas/Login'
 import EmployeesPage from './paginas/Colaboradores'
@@ -13,7 +13,7 @@ function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   const handleLogin = () => {
-  setIsAuthenticated(true)
+    setIsAuthenticated(true)
   }
 
   const handleLogout = () => {

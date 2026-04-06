@@ -7,6 +7,7 @@ import {
   XAxis,
   YAxis,
 } from 'recharts'
+import { useState } from 'react'
 import { TrendingUp } from 'lucide-react'
 import avatarPadrao from '../assets/avatarPadrao.svg'
 import './Dashboard.css'
@@ -55,7 +56,22 @@ function MonthTick({ x, y, payload }) {
   )
 }
 
+function formatDateBr(dataIso) {
+  if (!dataIso) return '--/--/----'
+  const [ano, mes, dia] = dataIso.split('-')
+  return `${dia}/${mes}/${ano}`
+}
+
 function DashboardPage() {
+  const [startDate, setStartDate] = useState('2023-07-05')
+  const [endDate, setEndDate] = useState('2023-07-23')
+
+  const openNativeDatePicker = (event) => {
+    if (event.currentTarget.showPicker) {
+      event.currentTarget.showPicker()
+    }
+  }
+
   return (
     <section className="dashboard-screen">
       <h1 className="dashboard-page-title">Dashboard</h1>
@@ -112,21 +128,43 @@ function DashboardPage() {
           <select defaultValue="este-mes">
             <option value="este-mes">Este Mes</option>
             <option value="mes-passado">Mes Passado</option>
+            <option value="esta-semana">Esta Semana</option>
+            <option value="semana-passada">Semana Passada</option>
             <option value="trimestral">Trimestral</option>
           </select>
         </label>
 
-        <label className="filter-block">
+        <div className="filter-block date-filter">
           <span>Data Personalizada</span>
-          <input type="text" defaultValue="05/07/2023 - 23/01/2023" />
-        </label>
+          <div className="date-range-fields">
+            <label className="date-input-row">
+              <span>De</span>
+              <input
+                type="date"
+                value={startDate}
+                onClick={openNativeDatePicker}
+                onChange={(event) => setStartDate(event.target.value)}
+              />
+            </label>
+
+            <label className="date-input-row">
+              <span>Ate</span>
+              <input
+                type="date"
+                value={endDate}
+                onClick={openNativeDatePicker}
+                onChange={(event) => setEndDate(event.target.value)}
+              />
+            </label>
+          </div>
+        </div>
       </section>
 
       <section className="dashboard-card detailed-chart-card">
         <h2 className="detailed-chart-title">Visao Detalhada de Vendas Diarias (Este Mes)</h2>
         <div className="detailed-chart-wrap">
-          <ResponsiveContainer width="100%" height={360}>
-            <BarChart data={chartData} margin={{ top: 8, right: 4, left: -14, bottom: 26 }}>
+          <ResponsiveContainer width="100%" height="100%">
+            <BarChart data={chartData} margin={{ top: 14, right: 4, left: -14, bottom: 26 }}>
               <CartesianGrid vertical={false} stroke="#242A31" strokeDasharray="4 4" />
               <XAxis dataKey="dia" tickLine={false} axisLine={false} tick={<MonthTick />} interval={0} />
               <YAxis
@@ -154,7 +192,6 @@ function DashboardPage() {
           </ResponsiveContainer>
         </div>
       </section>
-      </div>
     </section>
   )
 }

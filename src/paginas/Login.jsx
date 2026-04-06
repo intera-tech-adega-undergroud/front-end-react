@@ -1,17 +1,45 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Mail, Lock, Eye } from 'lucide-react';
 import logo from '../assets/logo.png';
-import './Login.css'; // Certifique-se de que o CSS está na mesma pasta
+import './Login.css';
 
 function LoginPage({ onLogin }) {
   const navigate = useNavigate();
 
-  const handleLogin = (event) => {
+  const [email, setEmail] = useState('');
+  const [senha, setSenha] = useState('');
+  const [erroMensagem, setErroMensagem] = useState('');
+
+  const handleLogin = async (event) => {
     event.preventDefault();
-    // Aqui você pode adicionar a lógica de pegar os dados dos inputs se desejar
-    onLogin();
-    navigate('/produtos', { replace: true });
+    setErroMensagem('');
+
+    const pacoteLogin = {
+      email: email,
+      senhaCripto: senha
+    };
+
+    try {
+      const resposta = await fetch('http://localhost:8080/funcionarios/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(pacoteLogin)
+      });
+
+      if (resposta.ok) {
+        const tokenJWT = await resposta.text();
+        localStorage.setItem('tokenAdega', tokenJWT);
+
+        onLogin();
+        navigate('/produtos', { replace: true });
+      } else {
+        const textoErro = await resposta.text();
+        setErroMensagem(textoErro || 'E-mail ou senha incorretos!');
+      }
+    } catch (error) {
+      setErroMensagem('Erro de conexão com o servidor. O Back-end está rodando?');
+    }
   };
 
   return (
@@ -24,13 +52,11 @@ function LoginPage({ onLogin }) {
           alt="Adega Underground"
           className="card-logo"
         />
-        {/* Lado Esquerdo - Branding */}
         <div className="branding-section">
           <h1>Adega <span>Underground</span></h1>
           <p>Controle total da sua adega, simples e eficiente.</p>
         </div>
 
-        {/* Lado Direito - Formulário */}
         <div className="form-section">
           <div className="top-line-glow"></div>
           <h2>Entrar</h2>
@@ -43,7 +69,9 @@ function LoginPage({ onLogin }) {
                 <input 
                   type="email" 
                   placeholder="seu@email.com" 
-                  required 
+                  required
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
                 />
               </div>
             </div>
@@ -55,7 +83,9 @@ function LoginPage({ onLogin }) {
                 <input 
                   type="password" 
                   placeholder="*******" 
-                  required 
+                  required
+                  value={senha}
+                  onChange={(e) => setSenha(e.target.value)}
                 />
                 <button type="button" className="eye-button">
                   <Eye size={20} />
@@ -70,6 +100,12 @@ function LoginPage({ onLogin }) {
               </label>
               <a href="#" className="forgot-password">Esqueci minha senha</a>
             </div>
+
+            {erroMensagem && (
+              <p style={{ color: 'red', fontWeight: 'bold', fontSize: '14px', marginTop: '10px' }}>
+                {erroMensagem}
+              </p>
+            )}
 
             <button type="submit" className="btn-submit">
               Entrar

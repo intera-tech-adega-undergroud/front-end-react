@@ -25,7 +25,8 @@
  }
 
  .wrap {
-     width: min(1120px, 100%);
+     width: 100%;
+     box-sizing: border-box;
  }
 
  .head {

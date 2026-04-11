@@ -8,8 +8,14 @@ function ProductsPage() {
 
   const [modalEditar, setModalEditar] = useState(false);
   const [modalAdicionar, setModalAdicionar] = useState(false);
+  const [modalSaida, setModalSaida] = useState(false);
 
   const [produtoSelecionado, setProdutoSelecionado] = useState(null);
+
+  const [buscaSaida, setBuscaSaida] = useState("");
+  const [quantidadeSaida, setQuantidadeSaida] = useState("");
+  const [produtoSaida, setProdutoSaida] = useState(null);
+  const [erroSaida, setErroSaida] = useState("");
 
   const [formEditar, setFormEditar] = useState({
     nome: "",
@@ -182,12 +188,26 @@ function ProductsPage() {
           onSearch={buscar}
         />
 
-        <button
-          className="btn-adicionar"
-          onClick={() => setModalAdicionar(true)}
-        >
-          + Adicionar produto
-        </button>
+        <div className="top-bar-buttons">
+          <button
+            className="btn-saida"
+            onClick={() => {
+              setModalSaida(true);
+              setBuscaSaida("");
+              setQuantidadeSaida("");
+              setProdutoSaida(null);
+              setErroSaida("");
+            }}
+          >
+            − Registrar saída
+          </button>
+          <button
+            className="btn-adicionar"
+            onClick={() => setModalAdicionar(true)}
+          >
+            + Adicionar produto
+          </button>
+        </div>
       </div>
 
       <table>
@@ -264,6 +284,113 @@ function ProductsPage() {
               <button onClick={() => setModalEditar(false)}>Cancelar</button>
               <button className="btn-salvar" onClick={salvar}>
                 Salvar
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* MODAL SAÍDA */}
+      {modalSaida && (
+        <div className="modal">
+          <div className="modal-content">
+            <h3>Registrar Saída</h3>
+
+            {!produtoSaida ? (
+              <div className="saida-busca-wrapper">
+                <input
+                  placeholder="Pesquisar produto..."
+                  value={buscaSaida}
+                  autoFocus
+                  onChange={(e) => {
+                    setBuscaSaida(e.target.value);
+                    setErroSaida("");
+                  }}
+                />
+                {buscaSaida && (
+                  <ul className="saida-sugestoes">
+                    {produtos.filter(p =>
+                      p.nome.toLowerCase().includes(buscaSaida.toLowerCase())
+                    ).length === 0 ? (
+                      <li className="saida-sugestao-vazia">Nenhum produto encontrado</li>
+                    ) : (
+                      produtos
+                        .filter(p => p.nome.toLowerCase().includes(buscaSaida.toLowerCase()))
+                        .map(p => (
+                          <li
+                            key={p.id}
+                            className="saida-sugestao-item"
+                            onClick={() => {
+                              setProdutoSaida(p);
+                              setBuscaSaida("");
+                              setErroSaida("");
+                            }}
+                          >
+                            <span>{p.nome}</span>
+                            <span className="saida-estoque-atual">Estoque: {p.estoque}</span>
+                          </li>
+                        ))
+                    )}
+                  </ul>
+                )}
+              </div>
+            ) : (
+              <div className="saida-produto-selecionado">
+                <div className="saida-produto-info">
+                  <span>{produtoSaida.nome}</span>
+                  <span className="saida-estoque-atual">Estoque atual: {produtoSaida.estoque}</span>
+                </div>
+                <button
+                  type="button"
+                  className="saida-trocar"
+                  onClick={() => { setProdutoSaida(null); setQuantidadeSaida(""); setErroSaida(""); }}
+                >
+                  Trocar
+                </button>
+              </div>
+            )}
+
+            <input
+              type="number"
+              placeholder="Quantidade para saída"
+              value={quantidadeSaida}
+              min="1"
+              onChange={(e) => {
+                setQuantidadeSaida(e.target.value);
+                setErroSaida("");
+              }}
+            />
+
+            {erroSaida && <p className="saida-erro">{erroSaida}</p>}
+
+            <div className="modal-buttons">
+              <button onClick={() => setModalSaida(false)}>Cancelar</button>
+              <button
+                className="btn-confirmar-saida"
+                onClick={() => {
+                  if (!produtoSaida) {
+                    setErroSaida("Selecione um produto válido.");
+                    return;
+                  }
+                  const qtd = Number(quantidadeSaida);
+                  if (!qtd || qtd <= 0) {
+                    setErroSaida("Informe uma quantidade válida.");
+                    return;
+                  }
+                  if (qtd > produtoSaida.estoque) {
+                    setErroSaida("Quantidade maior que o estoque disponível.");
+                    return;
+                  }
+                  setProdutos(produtos.map(p =>
+                    p.id === produtoSaida.id
+                      ? { ...p, estoque: p.estoque - qtd }
+                      : p
+                  ));
+                  setModalSaida(false);
+                  setMensagem(`Saída de ${qtd}x "${produtoSaida.nome}" registrada!`);
+                }}
+              >
+                Confirmar saída
               </button>
             </div>
           </div>

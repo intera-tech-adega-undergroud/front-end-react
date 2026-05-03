@@ -1,5 +1,12 @@
-function BotaoCobrar() {
-  return <button className="btn-cobrar">Cobrar</button>;
+import "./BotaoCobrar.css";
+
+function BotaoCobrar({ onClick }) {
+
+  return (
+    <button className="btn-cobrar" onClick={onClick}>
+      Cobrar
+    </button>
+  );
 }
 
 export default BotaoCobrar;

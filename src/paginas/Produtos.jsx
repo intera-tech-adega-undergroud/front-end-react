@@ -3,23 +3,24 @@ import Buscar from "../componentes/Buscar";
 import "../paginas/Produtos.css";
 
 function ProductsPage() {
-  const [produtos, setProdutos] = useState([]);
+  // Dados de teste para não precisar cadastrar toda vez que der F5
+  const [produtos, setProdutos] = useState([
+    { id: 1, nome: "Heineken 330ml", estoque: 50, custo: 4.50, preco: 8.00 },
+    { id: 2, nome: "Coca-Cola 2L", estoque: 24, custo: 6.00, preco: 12.00 },
+    { id: 3, nome: "Vinho Tinto Casillero", estoque: 10, custo: 35.00, preco: 55.00 }
+  ]);
+
   const [mensagem, setMensagem] = useState("");
 
   const [modalEditar, setModalEditar] = useState(false);
   const [modalAdicionar, setModalAdicionar] = useState(false);
-  const [modalSaida, setModalSaida] = useState(false);
+  const [modalAdicionarEstoque, setModalAdicionarEstoque] = useState(false);
 
   const [produtoSelecionado, setProdutoSelecionado] = useState(null);
 
-  const [buscaSaida, setBuscaSaida] = useState("");
-  const [quantidadeSaida, setQuantidadeSaida] = useState("");
-  const [produtoSaida, setProdutoSaida] = useState(null);
-  const [erroSaida, setErroSaida] = useState("");
 
   const [formEditar, setFormEditar] = useState({
     nome: "",
-    estoque: "",
     custo: "",
     preco: "",
   });
@@ -31,13 +32,14 @@ function ProductsPage() {
     preco: "",
   });
 
+  // Formulário para a nova função de repor estoque
+  const [formAdicionarEstoque, setFormAdicionarEstoque] = useState({
+    idProduto: "",
+    quantidade: "",
+  });
+
   // --- BLOCO DE CARREGAMENTO ---
   async function carregarProdutos() {
-    /* COMENTADO POR FALTA DE BACKEND
-    const resposta = await fetch("http://localhost:8080/produtos");
-    const dados = await resposta.json();
-    setProdutos(dados);
-    */
     console.log("Simulação: Carregamento ignorado (sem backend)");
   }
 
@@ -47,70 +49,39 @@ function ProductsPage() {
 
   // --- FUNÇÃO DE BUSCA ---
   async function buscar(texto) {
-    /* COMENTADO POR FALTA DE BACKEND
-    const resposta = await fetch("http://localhost:8080/produtos");
-    const dados = await resposta.json();
-    const filtrados = dados.filter((p) =>
-      p.nome.toLowerCase().includes(texto.toLowerCase())
-    );
-    setProdutos(filtrados);
-    */
-
-    // Versão Simulação Local
     const filtrados = produtos.filter((p) =>
-        p.nome.toLowerCase().includes(texto.toLowerCase())
+      p.nome.toLowerCase().includes(texto.toLowerCase())
     );
     setProdutos(filtrados);
   }
 
   // --- FUNÇÕES DE EDITAR ---
   async function abrirModalEditar(id) {
-    /* COMENTADO POR FALTA DE BACKEND
-    const resposta = await fetch(`http://localhost:8080/produtos/${id}`);
-    const produto = await resposta.json();
-    setProdutoSelecionado(id);
-    setFormEditar(produto);
-    setModalEditar(true);
-    */
-
-    // Versão Simulação Local
     const produto = produtos.find(p => p.id === id);
     if (produto) {
-        setProdutoSelecionado(id);
-        setFormEditar(produto);
-        setModalEditar(true);
+      setProdutoSelecionado(id);
+      // Passamos apenas os campos permitidos para edição
+      setFormEditar({
+        nome: produto.nome,
+        custo: produto.custo,
+        preco: produto.preco
+      });
+      setModalEditar(true);
     }
   }
 
   async function salvar() {
-    /* COMENTADO POR FALTA DE BACKEND
-    const resposta = await fetch(
-      `http://localhost:8080/produtos/${produtoSelecionado}`,
-      {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          ...formEditar,
-          estoque: Number(formEditar.estoque),
-          custo: Number(formEditar.custo),
-          preco: Number(formEditar.preco),
-        }),
-      }
-    );
-
-    if (resposta.ok) {
-      setModalEditar(false);
-      carregarProdutos();
-      setMensagem("Produto atualizado!");
-    }
-    */
-
-    // Versão Simulação Local
     const listaAtualizada = produtos.map(p => {
-        if (p.id === produtoSelecionado) {
-            return { ...formEditar, id: p.id };
-        }
-        return p;
+      if (p.id === produtoSelecionado) {
+        // Mantém o estoque original do produto, atualiza o resto
+        return { 
+          ...p, 
+          nome: formEditar.nome,
+          custo: Number(formEditar.custo),
+          preco: Number(formEditar.preco)
+        };
+      }
+      return p;
     });
     setProdutos(listaAtualizada);
     setModalEditar(false);
@@ -119,48 +90,12 @@ function ProductsPage() {
 
   // --- FUNÇÃO DE EXCLUIR ---
   async function excluir(id) {
-    /* COMENTADO POR FALTA DE BACKEND
-    const resposta = await fetch(
-      `http://localhost:8080/produtos/${id}`,
-      { method: "DELETE" }
-    );
-
-    if (resposta.ok) {
-      carregarProdutos();
-      setMensagem("Produto excluído!");
-    }
-    */
-
-    // Versão Simulação Local
     const novaLista = produtos.filter(p => p.id !== id);
     setProdutos(novaLista);
     setMensagem("Produto excluído (Local)!");
   }
 
-  // --- FUNÇÕES DE ADICIONAR ---
-  /* COMENTADO POR FALTA DE BACKEND
-  async function adicionar() {
-    const resposta = await fetch("http://localhost:8080/produtos", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        ...formAdicionar,
-        estoque: Number(formAdicionar.estoque),
-        custo: Number(formAdicionar.custo),
-        preco: Number(formAdicionar.preco),
-      }),
-    });
-
-    if (resposta.ok) {
-      setModalAdicionar(false);
-      carregarProdutos();
-      setMensagem("Produto adicionado!");
-    }
-  }
-  */
-
+  // --- FUNÇÕES DE ADICIONAR PRODUTO NOVO ---
   function adicionar() {
     const novoProduto = {
       ...formAdicionar,
@@ -176,9 +111,39 @@ function ProductsPage() {
     setFormAdicionar({ nome: "", estoque: "", custo: "", preco: "" });
   }
 
+  // --- FUNÇÃO DE ADICIONAR AO ESTOQUE (REPOSIÇÃO) ---
+  function salvarAdicaoEstoque() {
+    if (!formAdicionarEstoque.idProduto || !formAdicionarEstoque.quantidade) {
+      setMensagem("Preencha o produto e a quantidade para repor o estoque.");
+      setTimeout(() => setMensagem(""), 3000);
+      return;
+    }
+
+    const qtdAdicionada = Number(formAdicionarEstoque.quantidade);
+    
+    if (qtdAdicionada <= 0) {
+      setMensagem("A quantidade deve ser maior que zero.");
+      setTimeout(() => setMensagem(""), 3000);
+      return;
+    }
+
+    const listaAtualizada = produtos.map(p => {
+      if (p.id === Number(formAdicionarEstoque.idProduto)) {
+        return { ...p, estoque: p.estoque + qtdAdicionada };
+      }
+      return p;
+    });
+
+    setProdutos(listaAtualizada);
+    setModalAdicionarEstoque(false);
+    setMensagem("Estoque abastecido com sucesso!");
+    setFormAdicionarEstoque({ idProduto: "", quantidade: "" });
+    
+    // Ocultar mensagem após um tempo
+    setTimeout(() => setMensagem(""), 3000);
+  }
+
   return (
-    <>
-  
     <div className="produtos-container">
       <h1>Produtos</h1>
 
@@ -189,23 +154,18 @@ function ProductsPage() {
         />
 
         <div className="top-bar-buttons">
+          {/* Novo botão de reposição de estoque */}
           <button
-            className="btn-saida"
-            onClick={() => {
-              setModalSaida(true);
-              setBuscaSaida("");
-              setQuantidadeSaida("");
-              setProdutoSaida(null);
-              setErroSaida("");
-            }}
+            className="btn-add-estoque"
+            onClick={() => setModalAdicionarEstoque(true)}
           >
-            − Registrar saída
+            📦 Adicionar ao estoque
           </button>
           <button
             className="btn-adicionar"
             onClick={() => setModalAdicionar(true)}
           >
-            + Adicionar produto
+            + Novo produto
           </button>
         </div>
       </div>
@@ -226,8 +186,8 @@ function ProductsPage() {
             <tr key={item.id}>
               <td>{item.nome}</td>
               <td>{item.estoque}</td>
-              <td>R$ {item.custo}</td>
-              <td>R$ {item.preco}</td>
+              <td>R$ {item.custo.toFixed(2)}</td>
+              <td>R$ {item.preco.toFixed(2)}</td>
               <td>
                 <button onClick={() => abrirModalEditar(item.id)}>✏️</button>
                 <button onClick={() => excluir(item.id)}>🗑</button>
@@ -239,46 +199,43 @@ function ProductsPage() {
 
       <div className="mensagem">{mensagem}</div>
 
-      {/* MODAL EDITAR */}
+      {/* MODAL EDITAR (Sem o campo de estoque) */}
       {modalEditar && (
         <div className="modal">
           <div className="modal-content">
             <h3>Editar Produto</h3>
 
-            <input
-              value={formEditar.nome}
-              onChange={(e) =>
-                setFormEditar({ ...formEditar, nome: e.target.value })
-              }
-              placeholder="Nome"
-            />
+            <div className="form-group">
+              <label>Nome:</label>
+              <input
+                value={formEditar.nome}
+                onChange={(e) =>
+                  setFormEditar({ ...formEditar, nome: e.target.value })
+                }
+              />
+            </div>
 
-            <input
-              type="number"
-              value={formEditar.estoque}
-              onChange={(e) =>
-                setFormEditar({ ...formEditar, estoque: e.target.value })
-              }
-              placeholder="Estoque"
-            />
+            <div className="form-group">
+              <label>Custo:</label>
+              <input
+                type="number"
+                value={formEditar.custo}
+                onChange={(e) =>
+                  setFormEditar({ ...formEditar, custo: e.target.value })
+                }
+              />
+            </div>
 
-            <input
-              type="number"
-              value={formEditar.custo}
-              onChange={(e) =>
-                setFormEditar({ ...formEditar, custo: e.target.value })
-              }
-              placeholder="Custo"
-            />
-
-            <input
-              type="number"
-              value={formEditar.preco}
-              onChange={(e) =>
-                setFormEditar({ ...formEditar, preco: e.target.value })
-              }
-              placeholder="Preço"
-            />
+            <div className="form-group">
+              <label>Preço:</label>
+              <input
+                type="number"
+                value={formEditar.preco}
+                onChange={(e) =>
+                  setFormEditar({ ...formEditar, preco: e.target.value })
+                }
+              />
+            </div>
 
             <div className="modal-buttons">
               <button onClick={() => setModalEditar(false)}>Cancelar</button>
@@ -290,156 +247,54 @@ function ProductsPage() {
         </div>
       )}
 
-      {/* MODAL SAÍDA */}
-      {modalSaida && (
-        <div className="modal">
-          <div className="modal-content">
-            <h3>Registrar Saída</h3>
-
-            {!produtoSaida ? (
-              <div className="saida-busca-wrapper">
-                <input
-                  placeholder="Pesquisar produto..."
-                  value={buscaSaida}
-                  autoFocus
-                  onChange={(e) => {
-                    setBuscaSaida(e.target.value);
-                    setErroSaida("");
-                  }}
-                />
-                {buscaSaida && (
-                  <ul className="saida-sugestoes">
-                    {produtos.filter(p =>
-                      p.nome.toLowerCase().includes(buscaSaida.toLowerCase())
-                    ).length === 0 ? (
-                      <li className="saida-sugestao-vazia">Nenhum produto encontrado</li>
-                    ) : (
-                      produtos
-                        .filter(p => p.nome.toLowerCase().includes(buscaSaida.toLowerCase()))
-                        .map(p => (
-                          <li
-                            key={p.id}
-                            className="saida-sugestao-item"
-                            onClick={() => {
-                              setProdutoSaida(p);
-                              setBuscaSaida("");
-                              setErroSaida("");
-                            }}
-                          >
-                            <span>{p.nome}</span>
-                            <span className="saida-estoque-atual">Estoque: {p.estoque}</span>
-                          </li>
-                        ))
-                    )}
-                  </ul>
-                )}
-              </div>
-            ) : (
-              <div className="saida-produto-selecionado">
-                <div className="saida-produto-info">
-                  <span>{produtoSaida.nome}</span>
-                  <span className="saida-estoque-atual">Estoque atual: {produtoSaida.estoque}</span>
-                </div>
-                <button
-                  type="button"
-                  className="saida-trocar"
-                  onClick={() => { setProdutoSaida(null); setQuantidadeSaida(""); setErroSaida(""); }}
-                >
-                  Trocar
-                </button>
-              </div>
-            )}
-
-            <input
-              type="number"
-              placeholder="Quantidade para saída"
-              value={quantidadeSaida}
-              min="1"
-              onChange={(e) => {
-                setQuantidadeSaida(e.target.value);
-                setErroSaida("");
-              }}
-            />
-
-            {erroSaida && <p className="saida-erro">{erroSaida}</p>}
-
-            <div className="modal-buttons">
-              <button onClick={() => setModalSaida(false)}>Cancelar</button>
-              <button
-                className="btn-confirmar-saida"
-                onClick={() => {
-                  if (!produtoSaida) {
-                    setErroSaida("Selecione um produto válido.");
-                    return;
-                  }
-                  const qtd = Number(quantidadeSaida);
-                  if (!qtd || qtd <= 0) {
-                    setErroSaida("Informe uma quantidade válida.");
-                    return;
-                  }
-                  if (qtd > produtoSaida.estoque) {
-                    setErroSaida("Quantidade maior que o estoque disponível.");
-                    return;
-                  }
-                  setProdutos(produtos.map(p =>
-                    p.id === produtoSaida.id
-                      ? { ...p, estoque: p.estoque - qtd }
-                      : p
-                  ));
-                  setModalSaida(false);
-                  setMensagem(`Saída de ${qtd}x "${produtoSaida.nome}" registrada!`);
-                }}
-              >
-                Confirmar saída
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* MODAL ADICIONAR */}
+      {/* MODAL ADICIONAR NOVO PRODUTO */}
       {modalAdicionar && (
         <div className="modal">
           <div className="modal-content">
             <h3>Novo Produto</h3>
 
-            <input
-              placeholder="Nome"
-              value={formAdicionar.nome}
-              onChange={(e) =>
-                setFormAdicionar({ ...formAdicionar, nome: e.target.value })
-              }
-            />
+            <div className="form-group">
+              <label>Nome:</label>
+              <input
+                value={formAdicionar.nome}
+                onChange={(e) =>
+                  setFormAdicionar({ ...formAdicionar, nome: e.target.value })
+                }
+              />
+            </div>
 
-            <input
-              type="number"
-              placeholder="Estoque"
-              value={formAdicionar.estoque}
-              onChange={(e) =>
-                setFormAdicionar({
-                  ...formAdicionar,
-                  estoque: e.target.value,
-                })
-              }
-            />
+            <div className="form-group">
+              <label>Estoque Inicial:</label>
+              <input
+                type="number"
+                value={formAdicionar.estoque}
+                onChange={(e) =>
+                  setFormAdicionar({ ...formAdicionar, estoque: e.target.value })
+                }
+              />
+            </div>
 
-            <input
-              type="number"
-              placeholder="Custo"
-              value={formAdicionar.custo}
-              onChange={(e) =>
-                setFormAdicionar({ ...formAdicionar, custo: e.target.value })
-              }
-            />
+            <div className="form-group">
+              <label>Custo:</label>
+              <input
+                type="number"
+                value={formAdicionar.custo}
+                onChange={(e) =>
+                  setFormAdicionar({ ...formAdicionar, custo: e.target.value })
+                }
+              />
+            </div>
 
-            <input
-              type="number"
-              placeholder="Preço"
-              value={formAdicionar.preco}
-              onChange={(e) =>
-                setFormAdicionar({ ...formAdicionar, preco: e.target.value })
-              }
-            />
+            <div className="form-group">
+              <label>Preço:</label>
+              <input
+                type="number"
+                value={formAdicionar.preco}
+                onChange={(e) =>
+                  setFormAdicionar({ ...formAdicionar, preco: e.target.value })
+                }
+              />
+            </div>
 
             <div className="modal-buttons">
               <button onClick={() => setModalAdicionar(false)}>
@@ -452,8 +307,56 @@ function ProductsPage() {
           </div>
         </div>
       )}
+
+      {/* MODAL ADICIONAR AO ESTOQUE (REPOSIÇÃO) */}
+      {modalAdicionarEstoque && (
+        <div className="modal">
+          <div className="modal-content">
+            <h3>Adicionar ao Estoque</h3>
+
+            <div className="form-group">
+              <label>Nome:</label>
+              {/* Usando um select para garantir que o usuário escolha um produto que já existe */}
+              <select
+                value={formAdicionarEstoque.idProduto}
+                onChange={(e) => 
+                  setFormAdicionarEstoque({ ...formAdicionarEstoque, idProduto: e.target.value })
+                }
+              >
+                <option value="">Selecione um produto...</option>
+                {produtos.map(p => (
+                  <option key={p.id} value={p.id}>{p.nome}</option>
+                ))}
+              </select>
+            </div>
+
+            <div className="form-group">
+              <label>Quantidade:</label>
+              <input
+                type="number"
+                min="1"
+                value={formAdicionarEstoque.quantidade}
+                onChange={(e) =>
+                  setFormAdicionarEstoque({ ...formAdicionarEstoque, quantidade: e.target.value })
+                }
+              />
+            </div>
+
+            <div className="modal-buttons">
+              <button onClick={() => {
+                setModalAdicionarEstoque(false);
+                setFormAdicionarEstoque({ idProduto: "", quantidade: "" });
+              }}>
+                Cancelar
+              </button>
+              <button className="btn-salvar" onClick={salvarAdicaoEstoque}>
+                Confirmar
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
-    </>
   );
 }
 

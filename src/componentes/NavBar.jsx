@@ -53,7 +53,17 @@ function SystemLayout({ onLogout, nomeUsuario, cargoUsuario, avatarUsuario }) {
             </span>
               Perdas
           </NavLink>
-          
+
+          <NavLink 
+            className={({ isActive }) => isActive ? 'link active' : 'link'} 
+            to="/vendas"
+          >
+            <span className="nav-icon">
+            📉
+            </span>
+              Vendas
+          </NavLink>
+
           <hr />
           
           <NavLink 

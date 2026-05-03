@@ -1,0 +1,184 @@
+.vendas-container {
+  background: #0f1115;
+  color: white;
+  padding: 40px;
+  min-height: 100vh;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+h1 {
+  margin-bottom: 20px;
+}
+
+/* Cria o layout lado a lado para o PDV */
+.pdv-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 30px;
+  align-items: start;
+}
+
+/* Responsividade para telas menores */
+@media (max-width: 900px) {
+  .pdv-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.busca-section, .carrinho-section {
+  background: #16181d;
+  padding: 20px;
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.busca-section h2, .carrinho-section h2 {
+  margin: 0;
+  font-size: 1.2rem;
+  color: #4ade80;
+  border-bottom: 1px solid #2a2d33;
+  padding-bottom: 10px;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  background: #1c1f26;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+th {
+  background: #1f2228;
+  padding: 12px;
+  text-align: left;
+  font-size: 14px;
+}
+
+td {
+  padding: 12px;
+  border-bottom: 1px solid #2a2d33;
+  font-size: 14px;
+}
+
+.btn-adicionar-carrinho {
+  background: #1f7a4c;
+  color: white;
+  padding: 6px 12px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.btn-adicionar-carrinho:hover {
+  background: #24945d;
+}
+
+.carrinho-vazio {
+  color: #a3a3a3;
+  text-align: center;
+  padding: 30px 20px;
+}
+
+/* Controles de aumentar e diminuir quantidade */
+.qtd-controls {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.qtd-controls button {
+  background: #2a2d33;
+  color: white;
+  border: none;
+  padding: 4px 10px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.qtd-controls button:hover {
+  background: #3a3e45;
+}
+
+.btn-remover {
+  background: #8b1a1a;
+  color: white;
+  border: none;
+  padding: 6px 10px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.btn-remover:hover {
+  background: #b52020;
+}
+
+/* Área de finalização (Checkout) */
+.checkout-section {
+  margin-top: 10px;
+  background: #23262d;
+  padding: 20px;
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.total-display {
+  display: flex;
+  justify-content: space-between;
+  font-size: 1.6rem;
+  font-weight: bold;
+  color: #4ade80;
+}
+
+.pagamento-form {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.select-pagamento {
+  background: #0f1115;
+  color: white;
+  padding: 12px;
+  border: 1px solid #343842;
+  border-radius: 6px;
+  font-size: 1rem;
+  outline: none;
+}
+
+.select-pagamento:focus {
+  border-color: #4ade80;
+}
+
+.btn-finalizar {
+  background: linear-gradient(90deg, #22c55e, #4ade80);
+  color: #052e16;
+  font-weight: bold;
+  font-size: 1.1rem;
+  padding: 14px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: transform 0.15s ease, filter 0.15s ease;
+}
+
+.btn-finalizar:hover {
+  filter: brightness(1.1);
+}
+
+.btn-finalizar:active {
+  transform: scale(0.98);
+}
+
+.mensagem-pdv {
+  text-align: center;
+  margin-top: 5px;
+  font-size: 14px;
+  color: #4ade80;
+  font-weight: bold;
+}

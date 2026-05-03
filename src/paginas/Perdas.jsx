@@ -3,7 +3,28 @@ import Buscar from "../componentes/Buscar";
 import "./Perdas.css";
 
 function PerdasPage() {
-  const [perdas, setPerdas] = useState([]);
+  // Simulação de dados já cadastrados de perdas
+  const [perdas, setPerdas] = useState([
+    {
+      id: 1,
+      nome: "Heineken 330ml",
+      quantidade: 2,
+      motivo: "Garrafa quebrada no recebimento",
+      estoqueAtual: 48,
+      prejuizo: 7.00, // (Preço 8.00 - Custo 4.50) * 2
+      funcionario: "Junior"
+    },
+    {
+      id: 2,
+      nome: "Gelo Coco 200ml",
+      quantidade: 5,
+      motivo: "Embalagem furada",
+      estoqueAtual: 95,
+      prejuizo: 7.50, // (Preço 3.00 - Custo 1.50) * 5
+      funcionario: "Junior"
+    }
+  ]);
+
   const [modalAdicionar, setModalAdicionar] = useState(false);
   const [mensagem, setMensagem] = useState("");
 
@@ -13,27 +34,19 @@ function PerdasPage() {
     motivo: "",
   });
 
-  /* 
-     Simulação local do usuário logado
-  */
+  /* Simulação local do usuário logado */
   const usuarioLogado = "Junior";
-  /*
-  const usuarioLogado = localStorage.getItem("usuario");
-  */
+  /* const usuarioLogado = localStorage.getItem("usuario"); */
 
-  /*
-     Simulação do banco
-*/
+  /* Simulação do banco - Padronizado com as outras telas */
   const [produtosBanco, setProdutosBanco] = useState([
-    { id: 1, nome: "Heineken", estoque: 50, custo: 4.0, preco: 7.0 },
-    { id: 2, nome: "Budweiser", estoque: 40, custo: 3.5, preco: 6.0 },
-    { id: 3, nome: "Corona", estoque: 30, custo: 5.0, preco: 9.0 },
-    { id: 4, nome: "Skol", estoque: 60, custo: 2.8, preco: 5.5 },
+    { id: 1, nome: "Heineken 330ml", estoque: 48, custo: 4.50, preco: 8.00 },
+    { id: 2, nome: "Coca-Cola 2L", estoque: 24, custo: 6.00, preco: 12.00 },
+    { id: 3, nome: "Vinho Tinto Casillero", estoque: 10, custo: 35.00, preco: 55.00 },
+    { id: 4, nome: "Gelo Coco 200ml", estoque: 95, custo: 1.50, preco: 3.00 }
   ]);
 
-  /* Conexão com o backend
-     */
-  /*
+  /* Conexão com o backend comentada para o futuro
   useEffect(() => {
     fetch("http://localhost:8080/produtos")
       .then((res) => res.json())
@@ -43,6 +56,11 @@ function PerdasPage() {
   */
 
   function buscar(texto) {
+    if (!texto) {
+      // Se apagar a busca, o ideal seria recarregar a lista original. 
+      // Por enquanto, como é local, a busca filtra o estado atual.
+      return;
+    }
     const filtrados = perdas.filter((p) =>
       p.nome.toLowerCase().includes(texto.toLowerCase())
     );
@@ -56,18 +74,27 @@ function PerdasPage() {
 
     if (!produto) {
       setMensagem("Produto não encontrado no estoque!");
+      setTimeout(() => setMensagem(""), 3000);
       return;
     }
 
     const quantidade = Number(formAdicionar.quantidade);
 
+    if (quantidade <= 0) {
+      setMensagem("A quantidade deve ser maior que zero!");
+      setTimeout(() => setMensagem(""), 3000);
+      return;
+    }
+
     if (quantidade > produto.estoque) {
       setMensagem("Quantidade maior que o estoque disponível!");
+      setTimeout(() => setMensagem(""), 3000);
       return;
     }
 
     const novoEstoque = produto.estoque - quantidade;
 
+    // Cálculo do prejuízo baseado na margem (deixou de ganhar)
     const prejuizoUnitario = produto.preco - produto.custo;
     const prejuizoTotal = prejuizoUnitario * quantidade;
 
@@ -83,35 +110,29 @@ function PerdasPage() {
 
     setPerdas([...perdas, novaPerda]);
 
-    // Simulação de atualização no banco
+    // Simulação de atualização no banco local
     const produtosAtualizados = produtosBanco.map((p) =>
       p.id === produto.id ? { ...p, estoque: novoEstoque } : p
     );
-
     setProdutosBanco(produtosAtualizados);
-    /* Atualiza o estoque
-        fetch(`http://localhost:8080/produtos/${produto.id}`, {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ estoque: novoEstoque }),
-        });
-    */
 
-   
-       
+    /* --- Integrações com Backend Comentadas ---
+    fetch(`http://localhost:8080/produtos/${produto.id}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ estoque: novoEstoque }),
+    });
     
-    /*  Faz a inserção de uma nova perda
     fetch("http://localhost:8080/perdas", {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify(novaPerda),
     });
     */
 
     setModalAdicionar(false);
     setMensagem("Perda registrada com sucesso!");
+    setTimeout(() => setMensagem(""), 3000);
 
     setFormAdicionar({
       nome: "",
@@ -170,39 +191,48 @@ function PerdasPage() {
           <div className="modal-content">
             <h3>Registrar Perda</h3>
 
-            <input
-              placeholder="Nome do produto"
-              value={formAdicionar.nome}
-              onChange={(e) =>
-                setFormAdicionar({
-                  ...formAdicionar,
-                  nome: e.target.value,
-                })
-              }
-            />
+            <div className="form-group">
+              <label>Produto:</label>
+              <input
+                placeholder="Nome do produto"
+                value={formAdicionar.nome}
+                onChange={(e) =>
+                  setFormAdicionar({
+                    ...formAdicionar,
+                    nome: e.target.value,
+                  })
+                }
+              />
+            </div>
 
-            <input
-              type="number"
-              placeholder="Quantidade perdida"
-              value={formAdicionar.quantidade}
-              onChange={(e) =>
-                setFormAdicionar({
-                  ...formAdicionar,
-                  quantidade: e.target.value,
-                })
-              }
-            />
+            <div className="form-group">
+              <label>Quantidade:</label>
+              <input
+                type="number"
+                placeholder="Qtd perdida"
+                value={formAdicionar.quantidade}
+                onChange={(e) =>
+                  setFormAdicionar({
+                    ...formAdicionar,
+                    quantidade: e.target.value,
+                  })
+                }
+              />
+            </div>
 
-            <input
-              placeholder="Motivo da perda"
-              value={formAdicionar.motivo}
-              onChange={(e) =>
-                setFormAdicionar({
-                  ...formAdicionar,
-                  motivo: e.target.value,
-                })
-              }
-            />
+            <div className="form-group">
+              <label>Motivo:</label>
+              <input
+                placeholder="Ex: Quebra, Vencimento..."
+                value={formAdicionar.motivo}
+                onChange={(e) =>
+                  setFormAdicionar({
+                    ...formAdicionar,
+                    motivo: e.target.value,
+                  })
+                }
+              />
+            </div>
 
             <div className="modal-buttons">
               <button onClick={() => setModalAdicionar(false)}>

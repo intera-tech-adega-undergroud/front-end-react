@@ -10,6 +10,7 @@ import SystemLayout from './componentes/NavBar'
 import ProtectedRoute from './routes/ProtectedRoute'
 import avatarPadrao from './assets/avatarPadrao.svg'
 import Header from './componentes/Header'
+import VendasPage from './paginas/Vendas'
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -52,6 +53,7 @@ function App() {
             <Route path="/perdas" element={<PerdasPage />} />
             <Route path="/colaboradores" element={<EmployeesPage />} />
             <Route path="/registrofiado" element={<CreditRecordPage />} />
+            <Route path="/vendas" element={<VendasPage />} />
           </Route>
         </Route>
 

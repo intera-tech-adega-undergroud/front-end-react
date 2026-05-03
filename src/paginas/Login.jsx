@@ -38,7 +38,7 @@ function LoginPage({ onLogin }) {
         setErroMensagem(textoErro || 'E-mail ou senha incorretos!');
       }
     } catch (error) {
-      setErroMensagem('Erro de conexão com o servidor. O Back-end está rodando?');
+      setErroMensagem('Erro de conexão com o servidor.');
     }
   };
 

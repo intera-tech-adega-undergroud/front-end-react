@@ -1,10 +1,12 @@
 import { NavLink, Outlet } from 'react-router-dom'
 import iconProduto from "../assets/iconProdutos.svg";
+import iconPerdas from "../assets/iconPerdas.svg"
 import iconDashboard from "../assets/iconDashboard.svg";
 import logo from '../assets/logoChapelAdega.svg';
 import iconColaboradores from "../assets/iconColaboradores.svg";
 import iconVendaFiada from "../assets/iconVendaFiada.svg"
 import avatarPadrao from "../assets/avatarPadrao.svg";
+import iconMoney from "../assets/iconMoney.svg"
 import Header from './Header';
 import './NavBar.css'
 
@@ -49,7 +51,7 @@ function SystemLayout({ onLogout, nomeUsuario, cargoUsuario, avatarUsuario }) {
             to="/perdas"
           >
             <span className="nav-icon">
-            📉
+              <img src={iconPerdas} alt="Ícone de Perdas" />
             </span>
               Perdas
           </NavLink>
@@ -59,7 +61,7 @@ function SystemLayout({ onLogout, nomeUsuario, cargoUsuario, avatarUsuario }) {
             to="/vendas"
           >
             <span className="nav-icon">
-            📉
+            <img src={iconMoney} alt="Ícone de vendas" />
             </span>
               Vendas
           </NavLink>

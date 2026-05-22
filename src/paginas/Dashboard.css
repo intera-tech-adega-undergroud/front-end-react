@@ -145,7 +145,7 @@
 
 .date-input-row {
   display: grid;
-  gap: 4px;
+   gap: 4px;
 }
 
 .date-input-row span {

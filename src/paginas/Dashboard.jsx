@@ -134,8 +134,6 @@ function DashboardPage() {
           </select>
         </label>
 
-        <div className="filter-block date-filter">
-          <span>Data Personalizada</span>
           <div className="date-range-fields">
             <label className="date-input-row">
               <span>De</span>
@@ -156,7 +154,6 @@ function DashboardPage() {
                 onChange={(event) => setEndDate(event.target.value)}
               />
             </label>
-          </div>
         </div>
       </section>
 
@@ -164,7 +161,7 @@ function DashboardPage() {
         <h2 className="detailed-chart-title">Visao Detalhada de Vendas Diarias (Este Mes)</h2>
         <div className="detailed-chart-wrap">
           <ResponsiveContainer width="100%" height="100%">
-            <BarChart data={chartData} margin={{ top: 14, right: 4, left: -14, bottom: 26 }}>
+            <BarChart data={chartData} margin={{ top: 14, right: 10, left: -14, bottom: 10 }}>
               <CartesianGrid vertical={false} stroke="#242A31" strokeDasharray="4 4" />
               <XAxis dataKey="dia" tickLine={false} axisLine={false} tick={<MonthTick />} interval={0} />
               <YAxis

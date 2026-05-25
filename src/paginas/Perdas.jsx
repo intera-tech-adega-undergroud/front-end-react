@@ -1,9 +1,9 @@
 import { useState, useEffect } from "react";
+import { createPortal } from "react-dom";
 import Buscar from "../componentes/Buscar";
 import "./Perdas.css";
 
 function PerdasPage() {
-  // Simulação de dados já cadastrados de perdas
   const [perdas, setPerdas] = useState([
     {
       id: 1,
@@ -11,7 +11,7 @@ function PerdasPage() {
       quantidade: 2,
       motivo: "Garrafa quebrada no recebimento",
       estoqueAtual: 48,
-      prejuizo: 7.00, // (Preço 8.00 - Custo 4.50) * 2
+      prejuizo: 7.00,
       funcionario: "Junior"
     },
     {
@@ -20,7 +20,7 @@ function PerdasPage() {
       quantidade: 5,
       motivo: "Embalagem furada",
       estoqueAtual: 95,
-      prejuizo: 7.50, // (Preço 3.00 - Custo 1.50) * 5
+      prejuizo: 7.50,
       funcionario: "Junior"
     }
   ]);
@@ -34,11 +34,8 @@ function PerdasPage() {
     motivo: "",
   });
 
-  /* Simulação local do usuário logado */
   const usuarioLogado = "Junior";
-  /* const usuarioLogado = localStorage.getItem("usuario"); */
 
-  /* Simulação do banco - Padronizado com as outras telas */
   const [produtosBanco, setProdutosBanco] = useState([
     { id: 1, nome: "Heineken 330ml", estoque: 48, custo: 4.50, preco: 8.00 },
     { id: 2, nome: "Coca-Cola 2L", estoque: 24, custo: 6.00, preco: 12.00 },
@@ -46,19 +43,8 @@ function PerdasPage() {
     { id: 4, nome: "Gelo Coco 200ml", estoque: 95, custo: 1.50, preco: 3.00 }
   ]);
 
-  /* Conexão com o backend comentada para o futuro
-  useEffect(() => {
-    fetch("http://localhost:8080/produtos")
-      .then((res) => res.json())
-      .then((data) => setProdutosBanco(data))
-      .catch((err) => console.error(err));
-  }, []);
-  */
-
   function buscar(texto) {
     if (!texto) {
-      // Se apagar a busca, o ideal seria recarregar a lista original. 
-      // Por enquanto, como é local, a busca filtra o estado atual.
       return;
     }
     const filtrados = perdas.filter((p) =>
@@ -94,7 +80,6 @@ function PerdasPage() {
 
     const novoEstoque = produto.estoque - quantidade;
 
-    // Cálculo do prejuízo baseado na margem (deixou de ganhar)
     const prejuizoUnitario = produto.preco - produto.custo;
     const prejuizoTotal = prejuizoUnitario * quantidade;
 
@@ -110,25 +95,10 @@ function PerdasPage() {
 
     setPerdas([...perdas, novaPerda]);
 
-    // Simulação de atualização no banco local
     const produtosAtualizados = produtosBanco.map((p) =>
       p.id === produto.id ? { ...p, estoque: novoEstoque } : p
     );
     setProdutosBanco(produtosAtualizados);
-
-    /* --- Integrações com Backend Comentadas ---
-    fetch(`http://localhost:8080/produtos/${produto.id}`, {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ estoque: novoEstoque }),
-    });
-    
-    fetch("http://localhost:8080/perdas", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(novaPerda),
-    });
-    */
 
     setModalAdicionar(false);
     setMensagem("Perda registrada com sucesso!");
@@ -186,9 +156,9 @@ function PerdasPage() {
 
       <div className="mensagem">{mensagem}</div>
 
-      {modalAdicionar && (
-        <div className="modal">
-          <div className="modal-content">
+      {modalAdicionar && createPortal(
+        <div className="modal-fundo">
+          <div className="modal-caixa">
             <h3>Registrar Perda</h3>
 
             <div className="form-group">
@@ -234,7 +204,7 @@ function PerdasPage() {
               />
             </div>
 
-            <div className="modal-buttons">
+            <div className="modal-botoes">
               <button onClick={() => setModalAdicionar(false)}>
                 Cancelar
               </button>
@@ -243,7 +213,8 @@ function PerdasPage() {
               </button>
             </div>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </div>
   );

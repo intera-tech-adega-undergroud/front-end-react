@@ -1,94 +1,109 @@
-.conteudo{
-    background-color: #0f1115;
-    padding: 25px;
-    min-height: 100%;
-    box-sizing: border-box;
-    color: #ffffff;
+.conteudo {
+  background-color: #0f1115;
+  padding: 25px;
+  min-height: 100%;
+  box-sizing: border-box;
+  color: #ffffff;
 }
 
-.titulo{
-    font-size: 1.7rem;
-    font-weight: 700;
-    margin-bottom: 20px;
+.titulo {
+  font-size: 1.7rem;
+  font-weight: 700;
+  margin-bottom: 20px;
 }
 
 .filtros {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-top: 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 20px;
 }
 
 /* Status */
 .statusFiado {
-    display: flex;
-    background: #2a2a2b7a;
-    border-radius: 10px;
-    padding: 5px;
+  display: flex;
+  background: #2a2a2b7a;
+  border-radius: 10px;
+  padding: 5px;
 }
 
 .statusFiado button {
-    background: transparent;
-    border: none;
-    color: #ccc;
-    padding: 10px 20px;
-    cursor: pointer;
-    border-radius: 8px;
+  background: transparent;
+  border: none;
+  color: #ccc;
+  padding: 10px 20px;
+  cursor: pointer;
+  border-radius: 8px;
 }
 
 .statusFiado button.active {
-    background: linear-gradient(180deg, #5fff8aaa 0%, #24b94b 100%);
-    color: #fff;
+  background: linear-gradient(180deg, #5fff8aaa 0%, #24b94b 100%);
+  color: #fff;
 }
 
 /* Data */
 .filtroData {
-    font-size: small;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    background:  #2a2a2b61;
-    padding: 5px;
-    padding-left: 15px;
-    padding-right: 15px;
-    border-radius: 10px;
-    border: solid 1px #2a2a2b;
-    color: #ccc;
+  font-size: small;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: #2a2a2b61;
+  padding: 5px;
+  flex-wrap: nowrap;
+  white-space: nowrap;
+  padding-left: 15px;
+  padding-right: 15px;
+  border-radius: 10px;
+  border: solid 1px #2a2a2b;
+  color: #ccc;
 }
 
 .filtroData input {
-    background: transparent;
-    border: none;
-    color: #fff;
-    outline: none;
+  background: transparent;
+  border: none;
+  color: #fff;
+  outline: none;
 }
 
-.valorAberto{
-    display: flex;
-    flex-direction: column;
-    background: linear-gradient(180deg, #5fff8a25 0%, #24b94c50 100%);
-    border-radius: 5px;
-    padding-left: 80px;
-    padding-right: 10px;
-    padding-top: 5px;
-    padding-bottom: 10px;
-    border-bottom: solid 3px #02f347ea;
+.filtroData input {
+  background: transparent;
+  border: none;
+  color: #fff;
+  outline: none;
 }
 
-.totalAberto{
-    font-size: small;
-    color: #9dad9d8c;
+
+.filtroData input[type="date"]::-webkit-calendar-picker-indicator {
+  filter: invert(64%) sepia(87%) saturate(430%) hue-rotate(82deg) brightness(105%) contrast(95%);
+  cursor: pointer;
 }
 
-.valor{
-    display: flex;
-    justify-content: flex-end;
-    align-items: center;
-    gap: 5px;
+.valorAberto {
+  display: flex;
+  flex-direction: column;
+  background: linear-gradient(180deg, #5fff8a25 0%, #24b94c50 100%);
+  border-radius: 5px;
+  padding-left: 80px;
+  padding-right: 10px;
+  padding-top: 5px;
+  padding-bottom: 10px;
+  border-bottom: solid 3px #02f347ea;
 }
 
-p{
-    margin: 2px;
+.totalAberto {
+  font-size: small;
+  color: #9dad9d8c;
+}
+
+.valor {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 5px;
+}
+
+p {
+  margin: 2px;
 }
 
 body {

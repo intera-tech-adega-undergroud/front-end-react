@@ -63,9 +63,11 @@ function Header({avatarSrc}) {
           className="app-header__avatar"
           src={avatarSrc}
           alt={`Avatar de ${nomeUsuario}`}
+          style={{ cursor: 'pointer' }}
+          onClick={onPerfilClick}
         />
 
-        <div className="app-header__user">
+        <div className="app-header__user" style={{ cursor: 'pointer' }} onClick={onPerfilClick}>
           <strong className="app-header__name">{nomeUsuario}</strong>
           <span className="app-header__role">{cargoUsuario}</span>
         </div>

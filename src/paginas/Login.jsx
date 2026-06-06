@@ -112,7 +112,6 @@ function LoginPage({ onLogin }) {
                 <input type="checkbox" />
                 <span>Lembrar de mim</span>
               </label>
-              <a href="#" className="forgot-password">Esqueci minha senha</a>
             </div>
 
             {erroMensagem && (

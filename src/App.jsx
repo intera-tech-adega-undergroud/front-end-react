@@ -3,6 +3,7 @@ import { Navigate, Route, Routes } from 'react-router-dom'
 import LoginPage from './paginas/Login'
 import EmployeesPage from './paginas/Colaboradores'
 import ProductsPage from './paginas/Produtos'
+import PerfilPage from './paginas/Perfil'
 import CreditRecordPage from './paginas/RegistroFiado'
 import DashboardPage from './paginas/Dashboard'
 import PerdasPage from './paginas/Perdas'
@@ -54,6 +55,7 @@ function App() {
             <Route path="/colaboradores" element={<EmployeesPage />} />
             <Route path="/registrofiado" element={<CreditRecordPage />} />
             <Route path="/vendas" element={<VendasPage />} />
+            <Route path="/perfil" element={<PerfilPage nomeUsuario="Junior" cargoUsuario="Gerente" avatarSrc={avatarPadrao} />} />
           </Route>
         </Route>
 

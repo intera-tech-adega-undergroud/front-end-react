@@ -44,7 +44,11 @@
   backdrop-filter: blur(10px);
   border: 1px solid var(--login-card-border);
   background: var(--login-card);
-  box-shadow: 0 20px 45px rgba(0, 0, 0, 0.35);
+  box-shadow:
+    0 0 0 0px #fff,
+    0 0 80px 32px rgba(255,255,255,0.18),
+    0 0 160px 64px rgba(255,255,255,0.09),
+    0 20px 45px rgba(0, 0, 0, 0.35);
   position: relative;
   z-index: 2;
 }

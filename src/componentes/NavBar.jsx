@@ -8,9 +8,13 @@ import iconVendaFiada from "../assets/iconVendaFiada.svg"
 import avatarPadrao from "../assets/avatarPadrao.svg";
 import iconMoney from "../assets/iconMoney.svg"
 import Header from './Header';
+import { NavLink as RouterNavLink, useNavigate } from 'react-router-dom';
 import './NavBar.css'
 
 function SystemLayout({ onLogout, nomeUsuario, cargoUsuario, avatarUsuario }) {
+  // Para navegação programática ao clicar no header
+  const navigate = useNavigate();
+  const handlePerfilClick = () => navigate('/perfil');
   return (
     <div className="app-layout">
       <aside className="sidebar">
@@ -77,6 +81,15 @@ function SystemLayout({ onLogout, nomeUsuario, cargoUsuario, avatarUsuario }) {
             </span>
             Registro de novo colaborador
           </NavLink>
+          <RouterNavLink 
+            className={({ isActive }) => isActive ? 'link active' : 'link'}
+            to="/perfil"
+          >
+            <span className="nav-icon">
+              <img src={avatarUsuario || avatarPadrao} alt="Ícone de Perfil" style={{width: 24, height: 24, borderRadius: '50%'}} />
+            </span>
+            Perfil
+          </RouterNavLink>
         </nav>
         <br/>
         <div className='botoes'>
@@ -93,6 +106,7 @@ function SystemLayout({ onLogout, nomeUsuario, cargoUsuario, avatarUsuario }) {
           nomeUsuario={nomeUsuario || 'Usuario'}
           cargoUsuario={cargoUsuario || 'Colaborador'}
           avatarSrc={avatarUsuario || avatarPadrao}
+          onPerfilClick={handlePerfilClick}
         />
         <div className="page-body">
           <Outlet />

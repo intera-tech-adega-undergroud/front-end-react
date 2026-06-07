@@ -5,7 +5,15 @@ import LinhaFiado from "../componentes/LinhaFiado";
 function CreditRecordPage() {
   const [status, setStatus] = useState("Todos");
   const [mostrarModalCliente, setMostrarModalCliente] = useState(false);
-  const [novoCliente, setNovoCliente] = useState({ nome: "", telefone: "" });
+  const [salvandoCliente, setSalvandoCliente] = useState(false);
+
+  const [novoCliente, setNovoCliente] = useState({
+    nome: "",
+    telefone: "",
+    email: "",
+    compraFiado: true,
+    saldoDevedor: 0,
+  });
 
   const [dados, setDados] = useState([]);
   const [mensagem, setMensagem] = useState("");
@@ -43,7 +51,6 @@ function CreditRecordPage() {
       console.log("FIADOS DO BACKEND:", resultado);
 
       setDados(resultado);
-
     } catch (erro) {
       console.error("ERRO AO BUSCAR FIADOS:", erro);
       setMensagem("Erro ao carregar registros de fiado.");
@@ -105,8 +112,9 @@ function CreditRecordPage() {
         throw new Error("Erro ao registrar pagamento");
       }
 
-
       fecharModalCobrar();
+      await buscarFiados();
+
     } catch (erro) {
       console.error("ERRO AO PAGAR FIADO:", erro);
       setErroPagamento("Erro ao registrar pagamento.");
@@ -114,19 +122,20 @@ function CreditRecordPage() {
   };
 
   const salvarCliente = async () => {
+    if (salvandoCliente) return;
+
     if (!novoCliente.nome.trim()) {
       setMensagem("Informe o nome do cliente.");
       return;
     }
 
     try {
-      const token = localStorage.getItem("tokenAdega");
+      setSalvandoCliente(true);
 
       const resposta = await fetch(`${API_URL}/clientes`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-
         },
         body: JSON.stringify(novoCliente),
       });
@@ -135,12 +144,22 @@ function CreditRecordPage() {
         throw new Error("Erro ao cadastrar cliente");
       }
 
-      setNovoCliente({ nome: "", telefone: "" });
+      setNovoCliente({
+        nome: "",
+        telefone: "",
+        email: "",
+        compraFiado: true,
+        saldoDevedor: 0,
+      });
+
       setMostrarModalCliente(false);
-      buscarFiados();
+      await buscarFiados();
+      
     } catch (erro) {
       console.error("ERRO AO CADASTRAR CLIENTE:", erro);
       setMensagem("Erro ao cadastrar cliente.");
+    } finally {
+      setSalvandoCliente(false);
     }
   };
 
@@ -160,9 +179,7 @@ function CreditRecordPage() {
   };
 
   const normalizarStatus = (status) => {
-    return String(status || "")
-      .trim()
-      .toLowerCase();
+    return String(status || "").trim().toLowerCase();
   };
 
   const dadosFiltrados = dados.filter((item) => {
@@ -258,14 +275,67 @@ function CreditRecordPage() {
                 />
               </div>
 
+              <div className="modal-input-group">
+                <label>Email</label>
+                <input
+                  type="email"
+                  value={novoCliente.email}
+                  onChange={(e) =>
+                    setNovoCliente({
+                      ...novoCliente,
+                      email: e.target.value,
+                    })
+                  }
+                  placeholder="cliente@email.com"
+                />
+              </div>
+
+              <div className="modal-input-group">
+                <label>Permite compra fiado?</label>
+                <select
+                  value={novoCliente.compraFiado}
+                  onChange={(e) =>
+                    setNovoCliente({
+                      ...novoCliente,
+                      compraFiado: e.target.value === "true",
+                    })
+                  }
+                >
+                  <option value="true">Sim</option>
+                  <option value="false">Não</option>
+                </select>
+              </div>
+
+              <div className="modal-input-group">
+                <label>Saldo devedor inicial</label>
+                <input
+                  type="number"
+                  step="0.01"
+                  min="0"
+                  value={novoCliente.saldoDevedor}
+                  onChange={(e) =>
+                    setNovoCliente({
+                      ...novoCliente,
+                      saldoDevedor: Number(e.target.value),
+                    })
+                  }
+                  placeholder="0.00"
+                />
+              </div>
+
               <div className="modal-actions">
-                <button className="btn-salvar" onClick={salvarCliente}>
-                  Salvar
+                <button
+                  className="btn-salvar"
+                  onClick={salvarCliente}
+                  disabled={salvandoCliente}
+                >
+                  {salvandoCliente ? "Salvando..." : "Salvar"}
                 </button>
 
                 <button
                   className="btn-cancelar"
                   onClick={() => setMostrarModalCliente(false)}
+                  disabled={salvandoCliente}
                 >
                   Cancelar
                 </button>
@@ -333,12 +403,8 @@ function CreditRecordPage() {
                   >
                     <option value="Dinheiro">Dinheiro</option>
                     <option value="Pix">Pix</option>
-                    <option value="Cartão de Crédito">
-                      Cartão de Crédito
-                    </option>
-                    <option value="Cartão de Débito">
-                      Cartão de Débito
-                    </option>
+                    <option value="Cartão de Crédito">Cartão de Crédito</option>
+                    <option value="Cartão de Débito">Cartão de Débito</option>
                   </select>
                 </div>
 

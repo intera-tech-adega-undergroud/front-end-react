@@ -7,16 +7,19 @@ function LinhaFiado({ cliente, valor, data, status, onCobrar }) {
     maximumFractionDigits: 2,
   });
 
+  const estaPago =
+    status !== "Em Aberto" || Number(valor || 0) <= 0;
+
   return (
     <tr>
       <td>{cliente}</td>
       <td>R$ {valorFormatado}</td>
       <td>{data}</td>
       <td>
-        <StatusBadge status={status} />
+        <StatusBadge status={estaPago ? "Pago" : status} />
       </td>
       <td>
-        {status === "Em Aberto" ? (
+        {!estaPago ? (
           <BotaoCobrar onClick={onCobrar} />
         ) : (
           "Pago"

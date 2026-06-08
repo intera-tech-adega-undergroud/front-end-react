@@ -1,7 +1,7 @@
 import './Header.css'
 import { useState, useEffect } from 'react'
 
-function Header({avatarSrc}) {
+function Header({avatarSrc, onPerfilClick }) {
 
   const [nomeUsuario, setNomeUsuario] =
     useState('')

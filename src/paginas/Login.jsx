@@ -36,6 +36,11 @@ function LoginPage({ onLogin }) {
         )
 
         localStorage.setItem(
+          'idFuncionario',
+          dados.id
+        )
+
+        localStorage.setItem(
           'nomeUsuario',
           dados.nome
         )

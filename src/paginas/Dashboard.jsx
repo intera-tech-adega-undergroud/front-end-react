@@ -14,13 +14,33 @@ import './Dashboard.css'
 
 
 function MonthTick({ x, y, payload }) {
+
+  if (!payload?.payload) {
+    return null
+  }
+
   return (
     <g transform={`translate(${x},${y})`}>
-      <text x={0} y={0} dy={10} textAnchor="middle" fill="#A8B0B9" fontSize="10">
-        {payload.value}
+      <text
+        x={0}
+        y={0}
+        dy={10}
+        textAnchor="middle"
+        fill="#A8B0B9"
+        fontSize="10"
+      >
+        {payload.payload.dia}
       </text>
-      <text x={0} y={0} dy={22} textAnchor="middle" fill="#77808A" fontSize="9">
-        Set
+
+      <text
+        x={0}
+        y={0}
+        dy={22}
+        textAnchor="middle"
+        fill="#77808A"
+        fontSize="9"
+      >
+        {payload.payload.mes}
       </text>
     </g>
   )
@@ -30,6 +50,14 @@ function formatDateBr(dataIso) {
   if (!dataIso) return '--/--/----'
   const [ano, mes, dia] = dataIso.split('-')
   return `${dia}/${mes}/${ano}`
+}
+
+// Formata um objeto Date local diretamente para AAAA-MM-DD ignorando o fuso UTC
+function formatLocalDate(date) {
+  const ano = date.getFullYear()
+  const mes = String(date.getMonth() + 1).padStart(2, '0')
+  const dia = String(date.getDate()).padStart(2, '0')
+  return `${ano}-${mes}-${dia}`
 }
 
 function DashboardPage() {
@@ -48,9 +76,11 @@ function DashboardPage() {
 
   const [periodo, setPeriodo] = useState('este-mes')
 
-  const [startDate, setStartDate] = useState('2026-05-01')
+  const hoje = new Date()
+  const primeiroDiaDoMes = new Date(hoje.getFullYear(), hoje.getMonth(), 1)
 
-  const [endDate, setEndDate] = useState('2026-05-31')
+  const [startDate, setStartDate] = useState(formatLocalDate(primeiroDiaDoMes))
+  const [endDate, setEndDate] = useState(formatLocalDate(hoje))
 
   // Funções com requisições na API
 
@@ -79,10 +109,21 @@ function DashboardPage() {
 
       const dados = await response.json()
 
-      const dadosFormatados = dados.map(item => ({
-        dia: item.dia,
-        valor: item.valorTotalVendas
-      }))
+      const dadosFormatados = dados.map(item => {
+
+        // item.data vira "2026-06-05T00:00:00"
+        const data = new Date(item.data + 'T00:00:00')
+
+        return {
+          label: data.toLocaleDateString('pt-BR', {
+            day: '2-digit',
+            month: 'short'
+          }),
+          valor: item.valorTotalVendas
+        }
+      })
+
+      console.log(dadosFormatados)
 
       setChartData(dadosFormatados)
 
@@ -210,102 +251,55 @@ function DashboardPage() {
   }, [startDate, endDate])
 
   // Obter periodo
+  // Obter periodo
   useEffect(() => {
 
-  const hoje = new Date()
+    const hoje = new Date()
+    let inicio
+    let fim
 
-  let inicio
-  let fim
+    switch (periodo) {
+      case 'este-mes':
+        inicio = new Date(hoje.getFullYear(), hoje.getMonth(), 1)
+        fim = hoje
+        break
 
-  switch (periodo) {
+      case 'mes-passado':
+        inicio = new Date(hoje.getFullYear(), hoje.getMonth() - 1, 1)
+        fim = new Date(hoje.getFullYear(), hoje.getMonth(), 0)
+        break
 
-    case 'este-mes':
+      case 'esta-semana': {
+        const primeiroDiaSemana = hoje.getDate() - hoje.getDay()
+        inicio = new Date(hoje)
+        inicio.setDate(primeiroDiaSemana)
+        fim = hoje
+        break
+      }
 
-      inicio = new Date(
-        hoje.getFullYear(),
-        hoje.getMonth(),
-        1
-      )
+      case 'semana-passada': {
+        const primeiroDiaSemana = hoje.getDate() - hoje.getDay()
+        inicio = new Date(hoje)
+        inicio.setDate(primeiroDiaSemana - 7)
+        fim = new Date(hoje)
+        fim.setDate(primeiroDiaSemana - 1)
+        break
+      }
 
-      fim = hoje
+      case 'trimestral':
+        inicio = new Date(hoje.getFullYear(), hoje.getMonth() - 3, hoje.getDate())
+        fim = hoje
+        break
 
-      break
-
-    case 'mes-passado':
-
-      inicio = new Date(
-        hoje.getFullYear(),
-        hoje.getMonth() - 1,
-        1
-      )
-
-      fim = new Date(
-        hoje.getFullYear(),
-        hoje.getMonth(),
-        0
-      )
-
-      break
-
-    case 'esta-semana': {
-
-      const primeiroDiaSemana =
-        hoje.getDate() - hoje.getDay()
-
-      inicio = new Date(hoje)
-
-      inicio.setDate(primeiroDiaSemana)
-
-      fim = hoje
-
-      break
+      default:
+        return
     }
 
-    case 'semana-passada': {
+    // ===> O SEU NOVO CÓDIGO ENTRA BEM AQUI, SUBSTITUINDO O .toISOString() <===
+    setStartDate(formatLocalDate(inicio))
+    setEndDate(formatLocalDate(fim))
 
-      const primeiroDiaSemana =
-        hoje.getDate() - hoje.getDay()
-
-      inicio = new Date(hoje)
-
-      inicio.setDate(
-        primeiroDiaSemana - 7
-      )
-
-      fim = new Date(hoje)
-
-      fim.setDate(
-        primeiroDiaSemana - 1
-      )
-
-      break
-    }
-
-    case 'trimestral':
-
-      inicio = new Date(
-        hoje.getFullYear(),
-        hoje.getMonth() - 3,
-        hoje.getDate()
-      )
-
-      fim = hoje
-
-      break
-
-    default:
-      return
-  }
-
-  setStartDate(
-    inicio.toISOString().split('T')[0]
-  )
-
-  setEndDate(
-    fim.toISOString().split('T')[0]
-  )
-
-}, [periodo])
+  }, [periodo])
 
   const currencyFormatter = (valor) => `R$ ${Number(valor).toLocaleString('pt-BR')}`
 
@@ -336,8 +330,8 @@ function DashboardPage() {
         <article className="dashboard-card metric-card">
           <p className="metric-title">Faturamento do Dia</p>
           <h2 className="metric-value">{faturamentoDia
-              ? `R$ ${faturamentoDia.valorTotalVendido.toLocaleString('pt-BR')}`
-              : 'R$ 0'}</h2>
+            ? `R$ ${faturamentoDia.valorTotalVendido.toLocaleString('pt-BR')}`
+            : 'R$ 0'}</h2>
           <p className="metric-subtext">
             <TrendingUp size={14} />
             {faturamentoDia?.totalVendas || 0} vendidos
@@ -407,15 +401,18 @@ function DashboardPage() {
       </section>
 
       <section className="dashboard-card detailed-chart-card">
-        <h2 className="detailed-chart-title">Visao Detalhada de Vendas Diarias (Este Mes)</h2>
+        <h2 className="detailed-chart-title">Visao Detalhada de Vendas</h2>
         <div className="detailed-chart-wrap">
-          <ResponsiveContainer width="100%" height="100%">
+          <ResponsiveContainer width="100%" height={350}>
             <BarChart data={chartData} margin={{ top: 14, right: 10, left: -14, bottom: 10 }}>
               <CartesianGrid vertical={false} stroke="#242A31" strokeDasharray="4 4" />
-              <XAxis dataKey="dia" tickLine={false} axisLine={false} tick={<MonthTick />} interval={0} />
+              <XAxis
+                dataKey="label"
+                tickLine={false}
+                axisLine={false}
+              />
               <YAxis
-                domain={[0, 7000]}
-                ticks={[0, 1000, 2000, 3000, 4000, 5000, 6000, 7000]}
+                domain={[0, 'auto']}
                 stroke="#8F98A3"
                 tickLine={false}
                 axisLine={false}
@@ -431,7 +428,7 @@ function DashboardPage() {
                   color: '#FFFFFF',
                 }}
                 formatter={(value) => [currencyFormatter(value), 'Vendas do Dia']}
-                labelFormatter={(label) => `Dia ${label} - Set`}
+                labelFormatter={(label) => label}
               />
               <Bar dataKey="valor" fill="#3EDC67" radius={[8, 8, 0, 0]} maxBarSize={24} />
             </BarChart>

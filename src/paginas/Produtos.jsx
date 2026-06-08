@@ -11,6 +11,19 @@ function ProductsPage() {
   const [modalAdicionar, setModalAdicionar] = useState(false);
   const [modalAdicionarEstoque, setModalAdicionarEstoque] = useState(false);
   const [modalExcluir, setModalExcluir] = useState(false);
+  const [confirmarSaidaProduto, setConfirmarSaidaProduto] = useState(false);
+  const [modalProdutoOrigem, setModalProdutoOrigem] = useState(null);
+
+  const [modalNotaFiscal, setModalNotaFiscal] = useState(false);
+  const [arquivoNotaFiscal, setArquivoNotaFiscal] = useState(null);
+  const [textoNotaFiscal, setTextoNotaFiscal] = useState("");
+  const [carregandoNotaFiscal, setCarregandoNotaFiscal] = useState(false);
+  const [itensNotaFiscal, setItensNotaFiscal] = useState([]);
+
+  const [confirmarSaidaNF, setConfirmarSaidaNF] = useState(false);
+  const [paginaAtual, setPaginaAtual] = useState(1);
+
+  const produtosPorPagina = 6;
 
   const [produtoParaExcluir, setProdutoParaExcluir] = useState(null);
 
@@ -199,7 +212,7 @@ function ProductsPage() {
       volumeMl: Number(formAdicionar.volumeMl),
       qtdMinima: Number(formAdicionar.qtdMinima),
       qtdUnidade: Number(formAdicionar.qtdUnidade || 0),
-      categoria: formAdicionar.categoria
+      categoria: formAdicionar.categoria,
     };
 
     console.log("PRODUTO ENVIADO:", produto);
@@ -209,9 +222,9 @@ function ProductsPage() {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`
+          Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify(produto)
+        body: JSON.stringify(produto),
       });
 
       if (!resposta.ok) {
@@ -230,7 +243,6 @@ function ProductsPage() {
   }
 
   async function salvarAdicaoEstoque() {
-
     const token = localStorage.getItem("tokenAdega");
 
     if (!formAdicionarEstoque.idProduto || !formAdicionarEstoque.quantidade) {
@@ -285,9 +297,130 @@ function ProductsPage() {
       setMensagem("Erro ao editar produto.");
     }
 
-
     setTimeout(() => setMensagem(""), 3000);
   }
+
+  async function lerNotaFiscal() {
+    if (!arquivoNotaFiscal) {
+      setMensagem("Selecione uma imagem ou PDF da nota fiscal.");
+      return;
+    }
+
+    const token = localStorage.getItem("tokenAdega");
+
+    const formData = new FormData();
+    formData.append("arquivo", arquivoNotaFiscal);
+
+    try {
+      setCarregandoNotaFiscal(true);
+      setMensagem("Lendo nota fiscal...");
+
+      const resposta = await fetch("http://localhost:8080/notas-fiscais/ocr", {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        body: formData,
+      });
+
+      if (!resposta.ok) {
+        throw new Error("Erro ao ler nota fiscal");
+      }
+
+      const dados = await resposta.json();
+
+      setTextoNotaFiscal(dados.textoExtraido);
+      identificarProdutosNaNota(dados.textoExtraido);
+
+      setMensagem("Nota fiscal lida com sucesso!");
+    } catch (error) {
+      console.error(error);
+      setMensagem("Erro ao processar nota fiscal.");
+    } finally {
+      setCarregandoNotaFiscal(false);
+    }
+  }
+
+  function identificarProdutosNaNota(texto) {
+    const linhas = texto.split("\n");
+
+    const encontrados = [];
+
+    produtos.forEach((produto) => {
+      const produtoEncontrado = linhas.find((linha) =>
+        linha.toLowerCase().includes(produto.nome.toLowerCase())
+      );
+
+      if (produtoEncontrado) {
+        const numeros = produtoEncontrado.match(/\d+/g);
+
+        const quantidade = numeros ? Number(numeros[numeros.length - 1]) : 1;
+
+        encontrados.push({
+          idProduto: produto.idProduto,
+          nome: produto.nome,
+          quantidade,
+          estoqueAtual: produto.qtdUnidade,
+          novoEstoque: produto.qtdUnidade + quantidade,
+        });
+      }
+    });
+
+    setItensNotaFiscal(encontrados);
+  }
+
+  async function confirmarEntradaNotaFiscal() {
+    const token = localStorage.getItem("tokenAdega");
+
+    if (itensNotaFiscal.length === 0) {
+      setMensagem("Nenhum produto correspondente foi encontrado na nota.");
+      setTimeout(() => setMensagem(""), 3000);
+      return;
+    }
+
+    try {
+      for (const item of itensNotaFiscal) {
+        const resposta = await fetch(
+          `http://localhost:8080/produtos/${item.idProduto}/entrada`,
+          {
+            method: "PATCH",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+            body: JSON.stringify({
+              quantidade: item.quantidade,
+            }),
+          }
+        );
+
+        if (!resposta.ok) {
+          throw new Error(`Erro ao atualizar estoque de ${item.nome}`);
+        }
+      }
+
+      setMensagem("Estoque atualizado com sucesso pela nota fiscal!");
+      setTimeout(() => setMensagem(""), 3000);
+
+      setModalNotaFiscal(false);
+      setArquivoNotaFiscal(null);
+      setTextoNotaFiscal("");
+      setItensNotaFiscal([]);
+
+      carregarProdutos();
+    } catch (error) {
+      console.error(error);
+      setMensagem("Erro ao atualizar estoque pela nota fiscal.");
+    }
+
+  }
+
+  const totalPaginas = Math.ceil(produtos.length / produtosPorPagina);
+
+  const indiceInicial = (paginaAtual - 1) * produtosPorPagina;
+  const indiceFinal = indiceInicial + produtosPorPagina;
+
+  const produtosPaginados = produtos.slice(indiceInicial, indiceFinal);
 
   return (
     <div className="produtos-container">
@@ -299,10 +432,18 @@ function ProductsPage() {
         <div className="top-bar-buttons">
           <button
             className="btn-add-estoque"
+            onClick={() => setModalNotaFiscal(true)}
+          >
+            🧾 Ler Nota Fiscal
+          </button>
+
+          <button
+            className="btn-add-estoque"
             onClick={() => setModalAdicionarEstoque(true)}
           >
             📦 Adicionar ao estoque
           </button>
+
           <button
             className="btn-adicionar"
             onClick={() => setModalAdicionar(true)}
@@ -323,17 +464,17 @@ function ProductsPage() {
           </tr>
         </thead>
 
-        {/* Lista de Produtos */}
-
         <tbody>
-          {produtos.map((item) => (
+          {produtosPaginados.map((item) => (
             <tr key={item.idProduto}>
               <td>{item.nome}</td>
               <td>{item.qtdUnidade}</td>
               <td>R$ {Number(item.custo || 0).toFixed(2)}</td>
               <td>R$ {Number(item.preco || 0).toFixed(2)}</td>
               <td>
-                <button onClick={() => abrirModalEditar(item.idProduto)}>✏️</button>
+                <button onClick={() => abrirModalEditar(item.idProduto)}>
+                  ✏️
+                </button>
                 <button onClick={() => abrirModalExcluir(item)}>🗑</button>
               </td>
             </tr>
@@ -341,13 +482,195 @@ function ProductsPage() {
         </tbody>
       </table>
 
+      {totalPaginas > 1 && (
+        <div className="paginacao-produtos">
+          <button
+            disabled={paginaAtual === 1}
+            onClick={() => setPaginaAtual(paginaAtual - 1)}
+          >
+            Anterior
+          </button>
+
+          {Array.from({ length: totalPaginas }, (_, index) => (
+            <button
+              key={index + 1}
+              className={paginaAtual === index + 1 ? "pagina-ativa" : ""}
+              onClick={() => setPaginaAtual(index + 1)}
+            >
+              {index + 1}
+            </button>
+          ))}
+
+          <button
+            disabled={paginaAtual === totalPaginas}
+            onClick={() => setPaginaAtual(paginaAtual + 1)}
+          >
+            Próxima
+          </button>
+        </div>
+      )}
+
       <div className="mensagem">{mensagem}</div>
 
+      {/* MODAL LER NOTA FISCAL */}
+      {modalNotaFiscal &&
+        createPortal(
+          <div
+            className="modal-fundo"
+            onClick={() => {
+              if (textoNotaFiscal || itensNotaFiscal.length > 0) {
+                setConfirmarSaidaNF(true);
+              } else {
+                setModalNotaFiscal(false);
+              }
+            }}
+          >
+            <div
+              className="modal-caixa modal-caixa-nf"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <h3>Ler Nota Fiscal</h3>
+
+              <div className="form-group">
+                <label>Arquivo da nota fiscal:</label>
+                <input
+                  type="file"
+                  accept="image/*,.pdf"
+                  onChange={(e) => setArquivoNotaFiscal(e.target.files[0])}
+                />
+              </div>
+
+              {textoNotaFiscal && (
+                <div className="form-group">
+                  <label>Texto extraído:</label>
+                  <textarea
+                    value={textoNotaFiscal}
+                    readOnly
+                    rows={10}
+                    style={{
+                      width: "100%",
+                      resize: "vertical",
+                      padding: "10px",
+                      borderRadius: "8px",
+                    }}
+                  />
+
+                  {itensNotaFiscal.length > 0 && (
+                    <div className="form-group">
+                      <label>Produtos encontrados:</label>
+
+                      <table>
+                        <thead>
+                          <tr>
+                            <th>Produto</th>
+                            <th>Qtd NF</th>
+                            <th>Estoque atual</th>
+                            <th>Novo estoque</th>
+                          </tr>
+                        </thead>
+
+                        <tbody>
+                          {itensNotaFiscal.map((item) => (
+                            <tr key={item.idProduto}>
+                              <td>{item.nome}</td>
+                              <td>{item.quantidade}</td>
+                              <td>{item.estoqueAtual}</td>
+                              <td>{item.novoEstoque}</td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  )}
+                </div>
+              )}
+
+              <div className="modal-botoes">
+                <button
+                  onClick={() => {
+                    if (textoNotaFiscal || itensNotaFiscal.length > 0) {
+                      setConfirmarSaidaNF(true);
+                    } else {
+                      setModalNotaFiscal(false);
+                      setArquivoNotaFiscal(null);
+                      setTextoNotaFiscal("");
+                      setItensNotaFiscal([]);
+                    }
+                  }}
+                >
+                  Fechar
+                </button>
+
+                <button
+                  className="btn-salvar"
+                  onClick={lerNotaFiscal}
+                  disabled={carregandoNotaFiscal}
+                >
+                  {carregandoNotaFiscal ? "Lendo..." : "Ler NF"}
+                </button>
+
+                {itensNotaFiscal.length > 0 && (
+                  <button
+                    className="btn-salvar"
+                    onClick={confirmarEntradaNotaFiscal}
+                  >
+                    Confirmar entrada no estoque
+                  </button>
+                )}
+              </div>
+
+              {confirmarSaidaNF && (
+                <div className="confirmacao-saida-nf">
+                  <div
+                    className="confirmacao-caixa"
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    <h3>Tem certeza que deseja sair sem finalizar?</h3>
+
+                    <div className="confirmacao-botoes">
+                      <button
+                        className="btn-sim-sair"
+                        onClick={() => {
+                          setModalNotaFiscal(false);
+                          setConfirmarSaidaNF(false);
+                          setArquivoNotaFiscal(null);
+                          setTextoNotaFiscal("");
+                          setItensNotaFiscal([]);
+                        }}
+                      >
+                        Sim
+                      </button>
+
+                      <button
+                        className="btn-nao-sair"
+                        onClick={() => setConfirmarSaidaNF(false)}
+                      >
+                        Não
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>,
+          document.body
+        )}
+
       {/* MODAL EDITAR */}
+
       {modalEditar &&
         createPortal(
-          <div className="modal-fundo">
-            <div className="modal-caixa">
+          <div
+            className="modal-fundo"
+            onClick={() => {
+              setModalProdutoOrigem("editar");
+              setConfirmarSaidaProduto(true);
+            }}
+          >
+            <div
+              className="modal-caixa modal-caixa-scroll"
+              onClick={(e) => e.stopPropagation()}
+            >
               <h3>Editar Produto</h3>
 
               <div className="form-group">
@@ -415,7 +738,10 @@ function ProductsPage() {
                   type="number"
                   value={formEditar.qtdUnidade}
                   onChange={(e) =>
-                    setFormEditar({ ...formEditar, qtdUnidade: e.target.value })
+                    setFormEditar({
+                      ...formEditar,
+                      qtdUnidade: e.target.value,
+                    })
                   }
                 />
               </div>
@@ -453,8 +779,17 @@ function ProductsPage() {
       {/* MODAL ADICIONAR NOVO PRODUTO */}
       {modalAdicionar &&
         createPortal(
-          <div className="modal-fundo">
-            <div className="modal-caixa">
+          <div
+            className="modal-fundo"
+            onClick={() => {
+              setModalProdutoOrigem("adicionar");
+              setConfirmarSaidaProduto(true);
+            }}
+          >
+            <div
+              className="modal-caixa modal-caixa-scroll"
+              onClick={(e) => e.stopPropagation()}
+            >
               <h3>Novo Produto</h3>
 
               <div className="form-group">
@@ -473,7 +808,10 @@ function ProductsPage() {
                   type="number"
                   value={formAdicionar.preco}
                   onChange={(e) =>
-                    setFormAdicionar({ ...formAdicionar, preco: e.target.value })
+                    setFormAdicionar({
+                      ...formAdicionar,
+                      preco: e.target.value,
+                    })
                   }
                 />
               </div>
@@ -495,7 +833,6 @@ function ProductsPage() {
                   <option value="GARRAFA">Garrafa</option>
                   <option value="LATA">Lata</option>
                   <option value="Pacote">Pacote</option>
-
                 </select>
               </div>
 
@@ -576,7 +913,7 @@ function ProductsPage() {
           document.body
         )}
 
-      {/* MODAL ADICIONAR AO ESTOQUE (REPOSIÇÃO) */}
+      {/* MODAL ADICIONAR AO ESTOQUE */}
       {modalAdicionarEstoque &&
         createPortal(
           <div className="modal-fundo">
@@ -665,6 +1002,46 @@ function ProductsPage() {
                   onClick={excluir}
                 >
                   Confirmar Exclusão
+                </button>
+              </div>
+            </div>
+          </div>,
+          document.body
+        )}
+
+      {confirmarSaidaProduto &&
+        createPortal(
+          <div className="confirmacao-saida-nf">
+            <div className="confirmacao-caixa">
+              <h3>Tem certeza que deseja sair sem finalizar?</h3>
+
+              <div className="confirmacao-botoes">
+                <button
+                  className="btn-sim-sair"
+                  onClick={() => {
+                    if (modalProdutoOrigem === "editar") {
+                      setModalEditar(false);
+                    }
+
+                    if (modalProdutoOrigem === "adicionar") {
+                      setModalAdicionar(false);
+                    }
+
+                    setConfirmarSaidaProduto(false);
+                    setModalProdutoOrigem(null);
+                  }}
+                >
+                  Sim
+                </button>
+
+                <button
+                  className="btn-nao-sair"
+                  onClick={() => {
+                    setConfirmarSaidaProduto(false);
+                    setModalProdutoOrigem(null);
+                  }}
+                >
+                  Não
                 </button>
               </div>
             </div>

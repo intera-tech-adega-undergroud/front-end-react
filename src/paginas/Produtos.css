@@ -170,3 +170,111 @@ button:hover {
 .btn-salvar:hover {
   background: #24945d;
 }
+
+.produtos-container {
+  padding-top: 32px;
+}
+
+.produtos-container h1 {
+  margin-bottom: 28px;
+}
+
+.modal-caixa-nf {
+  width: 760px;
+  max-width: 92vw;
+  max-height: 85vh;
+  overflow-y: auto;
+}
+
+.modal-caixa-nf table {
+  width: 100%;
+}
+
+.modal-caixa-nf textarea {
+  max-height: 180px;
+}
+
+.paginacao-produtos {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  margin-top: 18px;
+}
+
+.paginacao-produtos button {
+  background: #1f242c;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 8px 14px;
+  cursor: pointer;
+}
+
+.paginacao-produtos button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.paginacao-produtos .pagina-ativa {
+  background: #00a8e8;
+}
+
+.confirmacao-saida-nf {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.65);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+}
+
+.confirmacao-caixa {
+  background: #1f242c;
+  border-radius: 14px;
+  padding: 28px;
+  width: 360px;
+  text-align: center;
+}
+
+.confirmacao-caixa h3 {
+  color: #fff;
+  margin-bottom: 24px;
+}
+
+.confirmacao-botoes {
+  display: flex;
+  gap: 16px;
+  justify-content: center;
+}
+
+.btn-sim-sair {
+  background: #d9534f;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 10px 24px;
+  cursor: pointer;
+}
+
+.btn-nao-sair {
+  background: #198754;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 10px 24px;
+  cursor: pointer;
+}
+
+.modal-caixa-scroll {
+  max-height: 85vh;
+  overflow-y: auto;
+}
+
+.modal-caixa-scroll {
+  width: 620px;
+  max-width: 90vw;
+  max-height: 85vh;
+  overflow-y: auto;
+}

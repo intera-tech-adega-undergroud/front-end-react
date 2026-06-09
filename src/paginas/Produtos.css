@@ -35,7 +35,7 @@ h1 {
 }
 
 .btn-add-estoque {
-  background: #0ea5e9;
+  background: #1f7a4c;
   color: white;
   padding: 10px 16px;
   border: none;
@@ -44,7 +44,7 @@ h1 {
 }
 
 .btn-add-estoque:hover {
-  background: #0284c7;
+  background: #28a745;
 }
 
 table {
@@ -217,7 +217,7 @@ button:hover {
 }
 
 .paginacao-produtos .pagina-ativa {
-  background: #00a8e8;
+  background: #1f7a4c;
 }
 
 .confirmacao-saida-nf {

@@ -329,3 +329,81 @@ td {
   background: #1f7a3f;
   border: solid 1px #28a745;
 }
+
+.paginacao-fiados {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  margin-top: 18px;
+}
+
+.paginacao-fiados button {
+  background: #1f242c;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 8px 14px;
+  cursor: pointer;
+}
+
+.paginacao-fiados button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.paginacao-fiados .pagina-ativa {
+  background: #28a745;
+}
+
+.tabela-container {
+  background: #161a2086;
+  border-radius: 10px;
+  margin-top: 30px;
+  overflow: hidden;
+}
+
+.tabela-container table {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+}
+
+.tabela-container tbody tr {
+  height: 64px;
+}
+
+.tabela-container th,
+.tabela-container td {
+  padding: 12px;
+  border-top: 1px solid #2a2f36;
+  vertical-align: middle;
+}
+
+.paginacao-fiados {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  padding: 16px 0;
+  border-top: 1px solid #2a2f36;
+  background: #161a20;
+}
+
+.paginacao-fiados button {
+  background: #1f242c;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 8px 14px;
+  cursor: pointer;
+}
+
+.paginacao-fiados button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.paginacao-fiados .pagina-ativa {
+  background: #28a745;
+}

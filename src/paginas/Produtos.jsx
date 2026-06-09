@@ -23,7 +23,7 @@ function ProductsPage() {
   const [confirmarSaidaNF, setConfirmarSaidaNF] = useState(false);
   const [paginaAtual, setPaginaAtual] = useState(1);
 
-  const produtosPorPagina = 6;
+  const produtosPorPagina = 5;
 
   const [produtoParaExcluir, setProdutoParaExcluir] = useState(null);
 
@@ -66,9 +66,11 @@ function ProductsPage() {
       });
 
       if (!resposta.ok) {
+        const erroTexto = await resposta.text();
+        console.log("STATUS PRODUTOS:", resposta.status);
+        console.log("ERRO BACKEND PRODUTOS:", erroTexto);
         throw new Error("Erro ao buscar produtos");
       }
-
       const dados = await resposta.json();
       setProdutos(dados);
     } catch (error) {

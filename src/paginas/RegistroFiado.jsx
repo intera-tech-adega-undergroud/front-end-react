@@ -25,6 +25,9 @@ function CreditRecordPage() {
   const [formaPagamento, setFormaPagamento] = useState("Dinheiro");
   const [erroPagamento, setErroPagamento] = useState("");
 
+  const [paginaAtual, setPaginaAtual] = useState(1);
+  const registrosPorPagina = 5;
+
   const API_URL = "http://localhost:8080";
 
   const buscarFiados = async () => {
@@ -154,7 +157,7 @@ function CreditRecordPage() {
 
       setMostrarModalCliente(false);
       await buscarFiados();
-      
+
     } catch (erro) {
       console.error("ERRO AO CADASTRAR CLIENTE:", erro);
       setMensagem("Erro ao cadastrar cliente.");
@@ -202,6 +205,13 @@ function CreditRecordPage() {
     return true;
   });
 
+  const totalPaginas = Math.ceil(dadosFiltrados.length / registrosPorPagina);
+
+  const indiceInicial = (paginaAtual - 1) * registrosPorPagina;
+  const indiceFinal = indiceInicial + registrosPorPagina;
+
+  const dadosPaginados = dadosFiltrados.slice(indiceInicial, indiceFinal);
+
   return (
     <>
       <main className="conteudo">
@@ -224,7 +234,10 @@ function CreditRecordPage() {
               <button
                 key={item}
                 className={status === item ? "active" : ""}
-                onClick={() => setStatus(item)}
+                onClick={() => {
+                  setStatus(item);
+                  setPaginaAtual(1);
+                }}
               >
                 {item}
               </button>
@@ -448,7 +461,7 @@ function CreditRecordPage() {
                   <td colSpan="5">Nenhum registro encontrado.</td>
                 </tr>
               ) : (
-                dadosFiltrados.map((item, index) => (
+                dadosPaginados.map((item, index) => (
                   <LinhaFiado
                     key={item.idCliente || index}
                     {...item}
@@ -458,6 +471,34 @@ function CreditRecordPage() {
               )}
             </tbody>
           </table>
+
+          {totalPaginas > 1 && (
+            <div className="paginacao-fiados">              
+            <button
+              disabled={paginaAtual === 1}
+              onClick={() => setPaginaAtual(paginaAtual - 1)}
+            >
+              Anterior
+            </button>
+
+              {Array.from({ length: totalPaginas }, (_, index) => (
+                <button
+                  key={index + 1}
+                  className={paginaAtual === index + 1 ? "pagina-ativa" : ""}
+                  onClick={() => setPaginaAtual(index + 1)}
+                >
+                  {index + 1}
+                </button>
+              ))}
+
+              <button
+                disabled={paginaAtual === totalPaginas}
+                onClick={() => setPaginaAtual(paginaAtual + 1)}
+              >
+                Próxima
+              </button>
+            </div>
+          )}
         </div>
       </main>
     </>

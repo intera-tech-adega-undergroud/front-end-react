@@ -28,8 +28,27 @@ function LoginPage({ onLogin }) {
       });
 
       if (resposta.ok) {
-        const tokenJWT = await resposta.text();
-        localStorage.setItem('tokenAdega', tokenJWT);
+        const dados = await resposta.json()
+
+        localStorage.setItem(
+          'tokenAdega',
+          dados.token
+        )
+
+        localStorage.setItem(
+          'idFuncionario',
+          dados.id
+        )
+
+        localStorage.setItem(
+          'nomeUsuario',
+          dados.nome
+        )
+
+        localStorage.setItem(
+          'cargoUsuario',
+          dados.cargo
+        )
 
         onLogin();
         navigate('/produtos', { replace: true });
@@ -45,7 +64,7 @@ function LoginPage({ onLogin }) {
   return (
     <div className="login-container">
       <div className="bg-glow"></div>
-      
+
       <div className="login-card">
         <img
           src={logo}
@@ -66,9 +85,9 @@ function LoginPage({ onLogin }) {
               <label>E-mail</label>
               <div className="relative-input">
                 <Mail className="input-icon" size={20} />
-                <input 
-                  type="email" 
-                  placeholder="seu@email.com" 
+                <input
+                  type="email"
+                  placeholder="seu@email.com"
                   required
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
@@ -80,9 +99,9 @@ function LoginPage({ onLogin }) {
               <label>Senha</label>
               <div className="relative-input">
                 <Lock className="input-icon" size={20} />
-                <input 
-                  type="password" 
-                  placeholder="*******" 
+                <input
+                  type="password"
+                  placeholder="*******"
                   required
                   value={senha}
                   onChange={(e) => setSenha(e.target.value)}

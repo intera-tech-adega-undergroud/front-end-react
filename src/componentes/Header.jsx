@@ -1,6 +1,26 @@
 import './Header.css'
+import { useState, useEffect } from 'react'
 
-function Header({ nomeUsuario, cargoUsuario, avatarSrc, onPerfilClick }) {
+function Header({avatarSrc, onPerfilClick }) {
+
+  const [nomeUsuario, setNomeUsuario] =
+    useState('')
+
+  const [cargoUsuario, setCargoUsuario] =
+    useState('')
+
+  useEffect(() => {
+
+    setNomeUsuario(
+      localStorage.getItem('nomeUsuario')
+    )
+
+    setCargoUsuario(
+      localStorage.getItem('cargoUsuario')
+    )
+
+  }, [])
+
   return (
     <header className="app-header">
       <div className="app-header__right">

@@ -343,20 +343,95 @@ function ProductsPage() {
     }
   }
 
+  function normalizarTexto(texto) {
+    return String(texto || "")
+      .toLowerCase()
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .replace(/[^a-z0-9\s]/g, " ")
+      .replace(/\s+/g, " ")
+      .trim();
+  }
+
+  function normalizarTexto(texto) {
+    return String(texto || "")
+      .toLowerCase()
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .replace(/[^a-z0-9\s]/g, " ")
+      .replace(/\s+/g, " ")
+      .trim();
+  }
+
+  function removerPalavrasGenericas(texto) {
+    const palavrasGenericas = [
+      "cerveja",
+      "refrigerante",
+      "vodka",
+      "whisky",
+      "energetico",
+      "bebida",
+      "lata",
+      "garrafa",
+      "long",
+      "neck",
+      "ml",
+      "l",
+      "un",
+      "unidade",
+      "quantidade",
+    ];
+
+    return normalizarTexto(texto)
+      .split(" ")
+      .filter((palavra) => !palavrasGenericas.includes(palavra))
+      .join(" ");
+  }
+
+  function extrairQuantidade(linhas, indexProduto) {
+    const linhaAtual = linhas[indexProduto] || "";
+    const proximaLinha = linhas[indexProduto + 1] || "";
+
+    const matchQuantidadeProxima = proximaLinha.match(/quantidade\s*[:\-]?\s*(\d+)/i);
+
+    if (matchQuantidadeProxima) {
+      return Number(matchQuantidadeProxima[1]);
+    }
+
+    const numerosLinhaAtual = linhaAtual.match(/\d+/g);
+
+    if (numerosLinhaAtual && numerosLinhaAtual.length > 0) {
+      return Number(numerosLinhaAtual[numerosLinhaAtual.length - 1]);
+    }
+
+    return 1;
+  }
+
   function identificarProdutosNaNota(texto) {
-    const linhas = texto.split("\n");
+    const linhas = texto
+      .split("\n")
+      .map((linha) => linha.trim())
+      .filter((linha) => linha.length > 0);
 
     const encontrados = [];
 
     produtos.forEach((produto) => {
-      const produtoEncontrado = linhas.find((linha) =>
-        linha.toLowerCase().includes(produto.nome.toLowerCase())
-      );
+      const nomeProdutoSemGenericos = removerPalavrasGenericas(produto.nome);
 
-      if (produtoEncontrado) {
-        const numeros = produtoEncontrado.match(/\d+/g);
+      const indexProduto = linhas.findIndex((linha) => {
+        const linhaSemGenericos = removerPalavrasGenericas(linha);
 
-        const quantidade = numeros ? Number(numeros[numeros.length - 1]) : 1;
+        if (!linhaSemGenericos || !nomeProdutoSemGenericos) return false;
+
+        const palavrasProduto = nomeProdutoSemGenericos.split(" ");
+
+        return palavrasProduto.some((palavra) =>
+          linhaSemGenericos.includes(palavra)
+        );
+      });
+
+      if (indexProduto !== -1) {
+        const quantidade = extrairQuantidade(linhas, indexProduto);
 
         encontrados.push({
           idProduto: produto.idProduto,
@@ -368,7 +443,12 @@ function ProductsPage() {
       }
     });
 
+    console.log("ENCONTRADOS:", encontrados);
     setItensNotaFiscal(encontrados);
+
+    if (encontrados.length === 0) {
+      setMensagem("Nenhum produto cadastrado foi encontrado na nota fiscal.");
+    }
   }
 
   async function confirmarEntradaNotaFiscal() {

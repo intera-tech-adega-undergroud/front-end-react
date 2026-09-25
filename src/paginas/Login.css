@@ -198,29 +198,6 @@
   color: var(--text-secondary);
 }
 
-.form-options {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 10px;
-  margin-top: -4px;
-}
-
-.remember-me {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  color: var(--text-secondary);
-  font-size: 0.9rem;
-}
-
-.remember-me input[type="checkbox"] {
-  accent-color: var(--brand-green-strong);
-  width: 16px;
-  height: 16px;
-  cursor: pointer;
-}
-
 .forgot-password {
   color: var(--brand-green);
   text-decoration: none;

@@ -50,6 +50,11 @@ function LoginPage({ onLogin }) {
           dados.cargo
         )
 
+        localStorage.setItem(
+          'permissoesUsuario',
+          JSON.stringify(dados.permissoes || [])
+        )
+
         onLogin();
         navigate('/produtos', { replace: true });
       } else {

@@ -9,6 +9,7 @@ import DashboardPage from './paginas/Dashboard'
 import PerdasPage from './paginas/Perdas'
 import SystemLayout from './componentes/NavBar'
 import ProtectedRoute from './routes/ProtectedRoute'
+import PermissionRoute from './routes/PermissionRoute'
 import avatarPadrao from './assets/avatarPadrao.svg'
 import Header from './componentes/Header'
 import VendasPage from './paginas/Vendas'
@@ -50,11 +51,17 @@ function App() {
             }
           >
             <Route path="/dashboard" element={<DashboardPage />} />
-            <Route path="/produtos" element={<ProductsPage />} />
+            <Route element={<PermissionRoute permissao="produtos_ver" />}>
+              <Route path="/produtos" element={<ProductsPage />} />
+            </Route>
             <Route path="/perdas" element={<PerdasPage />} />
-            <Route path="/colaboradores" element={<EmployeesPage />} />
+            <Route element={<PermissionRoute permissao="usuarios_criar" />}>
+              <Route path="/colaboradores" element={<EmployeesPage />} />
+            </Route>
             <Route path="/registrofiado" element={<CreditRecordPage />} />
-            <Route path="/vendas" element={<VendasPage />} />
+            <Route element={<PermissionRoute permissao="vendas_registrar" />}>
+              <Route path="/vendas" element={<VendasPage />} />
+            </Route>
             <Route path="/perfil" element={<PerfilPage nomeUsuario="Junior" cargoUsuario="Gerente" avatarSrc={avatarPadrao} />} />
           </Route>
         </Route>

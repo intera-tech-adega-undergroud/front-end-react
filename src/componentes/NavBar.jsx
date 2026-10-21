@@ -10,6 +10,7 @@ import iconMoney from "../assets/iconMoney.svg"
 import Header from './Header';
 import { NavLink as RouterNavLink, useNavigate } from 'react-router-dom';
 import './NavBar.css'
+import { temPermissao } from '../utils/permissoes'
 
 function SystemLayout({ onLogout, nomeUsuario, cargoUsuario, avatarUsuario }) {
   // Para navegação programática ao clicar no header
@@ -30,6 +31,7 @@ function SystemLayout({ onLogout, nomeUsuario, cargoUsuario, avatarUsuario }) {
             Dashboard
           </NavLink>
 
+          {temPermissao('produtos_ver') && (
           <NavLink 
             className={({ isActive }) => isActive ? 'link active' : 'link'} 
             to="/produtos"
@@ -39,6 +41,7 @@ function SystemLayout({ onLogout, nomeUsuario, cargoUsuario, avatarUsuario }) {
             </span>
             Produtos
           </NavLink>
+          )}
 
           <NavLink 
             className={({ isActive }) => isActive ? 'link active' : 'link'} 
@@ -60,6 +63,7 @@ function SystemLayout({ onLogout, nomeUsuario, cargoUsuario, avatarUsuario }) {
               Perdas
           </NavLink>
 
+          {temPermissao('vendas_registrar') && (
           <NavLink 
             className={({ isActive }) => isActive ? 'link active' : 'link'} 
             to="/vendas"
@@ -69,9 +73,11 @@ function SystemLayout({ onLogout, nomeUsuario, cargoUsuario, avatarUsuario }) {
             </span>
               Vendas
           </NavLink>
+          )}
 
           <hr />
           
+          {temPermissao('usuarios_criar') && (
           <NavLink 
             className={({ isActive }) => isActive ? 'link active' : 'link'} 
             to="/colaboradores"
@@ -81,6 +87,7 @@ function SystemLayout({ onLogout, nomeUsuario, cargoUsuario, avatarUsuario }) {
             </span>
             Registro de novo colaborador
           </NavLink>
+          )}
           <RouterNavLink 
             className={({ isActive }) => isActive ? 'link active' : 'link'}
             to="/perfil"

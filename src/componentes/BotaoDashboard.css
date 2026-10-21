@@ -1,0 +1,15 @@
+.btn-dashboard{
+    background-color: rgb(237, 237, 237);
+    color: rgba(26, 28, 30, 0.758);
+    border-radius: 20px;
+    width: 35%;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.18s ease;
+}
+
+.btn-dashboard:hover {
+    background-color: #b7fe56;
+    color: rgb(29, 31, 31);
+}
+

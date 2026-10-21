@@ -1,7 +1,9 @@
 import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 import Buscar from "../componentes/Buscar";
+import iconCaixaEstoque from "../assets/iconCaixaEstoque.png";
 import "../paginas/Produtos.css";
+import iconCaixa from "../assets/iconCaixa.png";
 
 function ProductsPage() {
   const [produtos, setProdutos] = useState([]);
@@ -506,14 +508,18 @@ function ProductsPage() {
 
   return (
     <div className="produtos-container">
-      <h1>Produtos</h1>
+      <div className="section-produto">
+        <h1 className="titulo">Produtos</h1>
+        <p className="paragrafo">Gerencie os produtos, estoques da sua adega.</p>
+      </div>
+      
 
       <div className="top-bar">
         <Buscar placeholder="Buscar por nome do produto..." onSearch={buscar} />
 
         <div className="top-bar-buttons">
           <button
-            className="btn-add-estoque"
+            className="btn-add-nf"
             onClick={() => setModalNotaFiscal(true)}
           >
             🧾 Ler Nota Fiscal
@@ -523,14 +529,15 @@ function ProductsPage() {
             className="btn-add-estoque"
             onClick={() => setModalAdicionarEstoque(true)}
           >
-            📦 Adicionar ao estoque
+            <img className="icon-repor-estoque" src={iconCaixaEstoque} alt="" />
+            Repor Estoque
           </button>
 
           <button
             className="btn-adicionar"
             onClick={() => setModalAdicionar(true)}
           >
-            + Novo produto
+            + Cadastrar produto
           </button>
         </div>
       </div>
@@ -547,20 +554,34 @@ function ProductsPage() {
         </thead>
 
         <tbody>
-          {produtosPaginados.map((item) => (
-            <tr key={item.idProduto}>
-              <td>{item.nome}</td>
-              <td>{item.qtdUnidade}</td>
-              <td>R$ {Number(item.custo || 0).toFixed(2)}</td>
-              <td>R$ {Number(item.preco || 0).toFixed(2)}</td>
-              <td>
-                <button onClick={() => abrirModalEditar(item.idProduto)}>
-                  ✏️
-                </button>
-                <button onClick={() => abrirModalExcluir(item)}>🗑</button>
+          {mensagem === "Erro ao carregar produtos." ? (
+            <tr>
+              <td colSpan="5">
+                <section className="estado-erro-produtos" role="alert">
+                  <div className="estado-erro-produtos-icone">
+                    <img src={iconCaixa} alt="" />
+                  </div>
+                  <h2>Erro ao carregar produtos</h2>
+                  <p>Não foi possível carregar os produtos agora. Tente novamente em instantes.</p>
+                </section>
               </td>
             </tr>
-          ))}
+          ) : (
+            produtosPaginados.map((item) => (
+                <tr key={item.idProduto}>
+                  <td>{item.nome}</td>
+                  <td>{item.qtdUnidade}</td>
+                  <td>R$ {Number(item.custo || 0).toFixed(2)}</td>
+                  <td>R$ {Number(item.preco || 0).toFixed(2)}</td>
+                  <td>
+                    <button onClick={() => abrirModalEditar(item.idProduto)}>
+                      ✏️
+                    </button>
+                    <button onClick={() => abrirModalExcluir(item)}>🗑</button>
+                  </td>
+                </tr>
+            ))
+          )}
         </tbody>
       </table>
 
@@ -592,7 +613,9 @@ function ProductsPage() {
         </div>
       )}
 
-      <div className="mensagem">{mensagem}</div>
+      {mensagem && mensagem !== "Erro ao carregar produtos." && (
+        <div className="mensagem">{mensagem}</div>
+      )}
 
       {/* MODAL LER NOTA FISCAL */}
       {modalNotaFiscal &&

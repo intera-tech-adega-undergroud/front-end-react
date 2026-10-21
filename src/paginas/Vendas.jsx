@@ -273,7 +273,7 @@ function VendasPage() {
 
   return (
     <div className="vendas-container">
-      <h1>Vendas</h1>
+      <h1>Frente de Caixa</h1>
 
       <div className="pdv-grid">
         {/* LADO ESQUERDO: BUSCA E RESULTADOS */}

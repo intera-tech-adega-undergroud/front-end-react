@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Mail, Lock, Eye } from 'lucide-react';
+import { Mail, Lock, Eye, EyeOff } from 'lucide-react';
 import logo from '../assets/logo.png';
 import './Login.css';
 
@@ -9,12 +9,14 @@ function LoginPage({ onLogin }) {
 
   const [email, setEmail] = useState('');
   const [senha, setSenha] = useState('');
+  const [mostrarSenha, setMostrarSenha] = useState(false);
   const [erroMensagem, setErroMensagem] = useState('');
 
   const handleLogin = async (event) => {
     event.preventDefault();
     setErroMensagem('');
 
+    /*
     const pacoteLogin = {
       email: email,
       senhaCripto: senha
@@ -56,9 +58,13 @@ function LoginPage({ onLogin }) {
         const textoErro = await resposta.text();
         setErroMensagem(textoErro || 'E-mail ou senha incorretos!');
       }
-    } catch (error) {
+    } catch {
       setErroMensagem('Erro de conexão com o servidor.');
     }
+    */
+
+    onLogin();
+    navigate('/produtos', { replace: true });
   };
 
   return (
@@ -100,23 +106,22 @@ function LoginPage({ onLogin }) {
               <div className="relative-input">
                 <Lock className="input-icon" size={20} />
                 <input
-                  type="password"
+                  type={mostrarSenha ? 'text' : 'password'}
                   placeholder="*******"
                   required
                   value={senha}
                   onChange={(e) => setSenha(e.target.value)}
                 />
-                <button type="button" className="eye-button">
-                  <Eye size={20} />
+                <button
+                  type="button"
+                  className="eye-button"
+                  aria-label={mostrarSenha ? 'Ocultar senha' : 'Mostrar senha'}
+                  aria-pressed={mostrarSenha}
+                  onClick={() => setMostrarSenha((visivel) => !visivel)}
+                >
+                  {mostrarSenha ? <EyeOff size={20} /> : <Eye size={20} />}
                 </button>
               </div>
-            </div>
-
-            <div className="form-options">
-              <label className="remember-me">
-                <input type="checkbox" />
-                <span>Lembrar de mim</span>
-              </label>
             </div>
 
             {erroMensagem && (

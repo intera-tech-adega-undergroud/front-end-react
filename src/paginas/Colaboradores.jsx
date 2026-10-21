@@ -13,6 +13,7 @@ function EmployeesPage() {
   const [senha, setSenha] = useState("");
 
   const [permissoes, setPermissoes] = useState([]);
+  const [enviando, setEnviando] = useState(false);
 
   const [email, setEmail] = useState("");
   const [erroEmail, setErroEmail] = useState("");
@@ -99,16 +100,17 @@ function EmployeesPage() {
     }, 3000);
   }
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     setErroForm("");
 
     const form = e.target;
-    const nome = form[0].value;
-    const sobrenome = form[1].value;
-    const cpf = form[2].value;
-    const telefone = form[4].value;
+    const dados = new FormData(form);
+    const nome = dados.get("nome").trim();
+    const sobrenome = dados.get("sobrenome").trim();
+    const cpf = dados.get("cpf");
+    const telefone = dados.get("celular");
 
     if (!nome || !sobrenome || !cpf || !email || !telefone || !senha) {
       mostrarErro("Preencha todos os campos obrigatórios");
@@ -135,6 +137,50 @@ function EmployeesPage() {
       mostrarErro("Selecione pelo menos uma permissão");
       return;
     }
+
+    setEnviando(true);
+
+    try {
+      const resposta = await fetch("http://localhost:8080/funcionarios", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("tokenAdega")}`,
+        },
+        body: JSON.stringify({
+          nome,
+          sobrenome,
+          cpf,
+          email: email.trim(),
+          celular: telefone,
+          senha,
+          permissoes,
+        }),
+      });
+
+      if (!resposta.ok) {
+        let mensagem = "Não foi possível cadastrar o usuário";
+        if (resposta.status === 401) mensagem = "Sessão expirada, faça login novamente";
+        else if (resposta.status === 403 && !resposta.headers.get("content-type")?.includes("json")) {
+          mensagem = "Você não tem permissão para cadastrar usuários";
+        } else {
+          const corpo = await resposta.json().catch(() => null);
+          if (corpo?.message) mensagem = corpo.message;
+        }
+        mostrarErro(mensagem);
+        return;
+      }
+    } catch {
+      mostrarErro("Erro de conexão com o servidor");
+      return;
+    } finally {
+      setEnviando(false);
+    }
+
+    form.reset();
+    setEmail("");
+    setSenha("");
+    setPermissoes([]);
 
     setMostrarSucesso(true);
 
@@ -184,18 +230,18 @@ function EmployeesPage() {
             <div className="row">
               <div>
                 <label>Nome</label>
-                <input placeholder="Ex: João" />
+                <input name="nome" placeholder="Ex: João" />
               </div>
               <div>
                 <label>Sobrenome</label>
-                <input placeholder="Ex: Souza" />
+                <input name="sobrenome" placeholder="Ex: Souza" />
               </div>
             </div>
 
             <div className="row">
               <div>
                 <label>CPF</label>
-                <input placeholder="000.000.000-00" onChange={handleCpf} />
+                <input name="cpf" placeholder="000.000.000-00" onChange={handleCpf} />
                 <div className="hint">Somente Números</div>
               </div>
 
@@ -209,7 +255,7 @@ function EmployeesPage() {
             <div className="row">
               <div>
                 <label>Telefone</label>
-                <input onChange={handleTel} />
+                <input name="celular" onChange={handleTel} />
                 <div className="hint">Somente Números</div>
               </div>
 
@@ -392,7 +438,7 @@ function EmployeesPage() {
 
           <div className="actions">
             <button type="button" className="btn">Cancelar</button>
-            <button type="submit" className="btn primary">Salvar usuário</button>
+            <button type="submit" className="btn primary" disabled={enviando}>Salvar usuário</button>
           </div>
         </div>
 

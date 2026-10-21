@@ -10,7 +10,9 @@ import {
 import { useState, useEffect } from 'react'
 import { TrendingUp } from 'lucide-react'
 import avatarPadrao from '../assets/avatarPadrao.svg'
+import BotaoDashboard from '../componentes/BotaoDashboard'
 import './Dashboard.css'
+
 
 
 function MonthTick({ x, y, payload }) {
@@ -311,11 +313,17 @@ function DashboardPage() {
 
   return (
     <section className="dashboard-screen">
-      <h1 className="dashboard-page-title">Dashboard</h1>
-
+      <div className="section-dash">
+        <h1 className="dashboard-page-title">Dashboard</h1>
+        <div className="btns-dash">
+            <BotaoDashboard />
+            <BotaoDashboard texto="Vendas" />
+        </div>
+      </div>
+      
       <section className="dashboard-metrics">
         <article className="dashboard-card metric-card">
-          <p className="metric-title">Vendas do Mes</p>
+          <p className="metric-title">Vendas do Mês</p>
           <h2 className="metric-value">
             {vendasMes
               ? `R$ ${vendasMes.valorTotalVendido.toLocaleString('pt-BR')}`

@@ -11,13 +11,21 @@
 }
 
 .sidebar{
-    background: var(--nav);
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 1001;
+    background: rgb(4, 4, 4);
+    border-right: solid 1px rgba(128, 128, 128, 0.258);
     color: var(--text);
     transition: 0.2s ease;
     padding: 0;
+    padding-left: 20px;
+    padding-right: 20px;
     width: 230px;
     margin: 0;
-    min-height: 100vh;
+    height: 100vh;
+    overflow-y: auto;
 
 }
 
@@ -40,23 +48,29 @@
     display: flex;
     font-size: 15px;
     align-items: center;
-    padding-left: 21px;
+    padding-left: 35px;
     padding-bottom: 10px;
     padding-top: 10px;
     font-weight:400;
     border-radius: 4px;
     gap: 8px;
     width: 90%;
+    transition: background-color 0.25s ease, color 0.25s ease, border-radius 0.25s ease;
 }
 
 /* Estilo quando o link está ativo (página atual) */
 .link.active {
-  background: linear-gradient(90deg, #52ff836e 0%,#3076433c 100%); 
-  color: var(--text);  
+  background: #b7fe56; 
+  color: var(--bg);  
   font-weight: 500;
-  border-left: 4px solid #52ff83; 
+  border-radius: 12px;
   width: 100%;
 }
+
+.link.active .nav-icon img {
+    filter: brightness(0);
+}
+
 .nav-icon {
     width: 22px;
     height: 22px;
@@ -102,16 +116,19 @@ hr{
         min-height: 100vh;
         display: flex;
         flex-direction: column;
+    width: calc(100% - 230px);
+    margin-left: 230px;
 }
 
 .page-body {
         flex: 1;
+    padding-top: 62px;
 }
 
 
 :root {
     --verde-escuro: #3076433c;
-    --verde-claro:#52ff836e;
+    --verde-claro:#50e47ae6;
   --nav: linear-gradient(90deg, #000000 0%, #111111 40%, #2b2b2d 100%);
     --bg: #000000;
   --text: #ffffff;

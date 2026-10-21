@@ -1,7 +1,11 @@
 .app-header {
-  width: 100%;
+  position: fixed;
+  top: 0;
+  left: 230px;
+  z-index: 1000;
+  width: calc(100% - 230px);
   height: 62px;
-  background: #0f1115;
+  background: #000000;
   border-bottom: 1px solid #2a2d33;
   display: flex;
   align-items: center;

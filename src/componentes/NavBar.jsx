@@ -20,6 +20,7 @@ function SystemLayout({ onLogout, nomeUsuario, cargoUsuario, avatarUsuario }) {
       <aside className="sidebar">
         <h2 className="tituloNav"><img className='logo' src={logo} alt="Logo de chapel de leprechaum" /> Adega Underground</h2>
         <nav className="sidebar-nav">
+
           <NavLink 
             className={({ isActive }) => isActive ? 'link active' : 'link'} 
             to="/dashboard"
@@ -67,7 +68,7 @@ function SystemLayout({ onLogout, nomeUsuario, cargoUsuario, avatarUsuario }) {
             <span className="nav-icon">
             <img src={iconMoney} alt="Ícone de vendas" />
             </span>
-              Vendas
+              Caixa
           </NavLink>
 
           <hr />
@@ -79,7 +80,7 @@ function SystemLayout({ onLogout, nomeUsuario, cargoUsuario, avatarUsuario }) {
             <span className="nav-icon">
               <img src={iconColaboradores} alt="Ícone de Colaboradores" />
             </span>
-            Registro de novo colaborador
+            Cadastrar Colaborador
           </NavLink>
           <RouterNavLink 
             className={({ isActive }) => isActive ? 'link active' : 'link'}

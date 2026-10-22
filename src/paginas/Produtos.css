@@ -244,8 +244,10 @@ button:hover {
 }
 
 .modal-titulo-novo-produto img {
-  width: 24px;
-  height: 24px;
+  display: block;
+  width: 32px;
+  height: 32px;
+  flex: 0 0 32px;
   object-fit: contain;
 }
 
@@ -280,8 +282,10 @@ button:hover {
 }
 
 .modal-caixa-titulo-estoque img {
-  width: 24px;
-  height: 24px;
+  display: block;
+  width: 32px;
+  height: 32px;
+  flex: 0 0 32px;
   object-fit: contain;
 }
 

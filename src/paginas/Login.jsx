@@ -16,6 +16,7 @@ function LoginPage({ onLogin }) {
     event.preventDefault();
     setErroMensagem('');
 
+  
     const pacoteLogin = {
       email: email,
       senhaCripto: senha
@@ -29,7 +30,12 @@ function LoginPage({ onLogin }) {
       });
 
       if (resposta.ok) {
-        const dados = await resposta.json()
+        const dados = await resposta.json();
+
+        if (!dados.token) {
+          setErroMensagem('O servidor não retornou um token de acesso.');
+          return;
+        }
 
         localStorage.setItem(
           'tokenAdega',
@@ -65,10 +71,6 @@ function LoginPage({ onLogin }) {
     } catch {
       setErroMensagem('Erro de conexão com o servidor.');
     }
-  
-
-    onLogin();
-    navigate('/produtos', { replace: true });
   };
 
   return (

@@ -15,13 +15,20 @@ import Header from './componentes/Header'
 import VendasPage from './paginas/Vendas'
 
 function App() {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState(
+    () => Boolean(localStorage.getItem('tokenAdega'))
+  );
 
   const handleLogin = () => {
     setIsAuthenticated(true)
   }
 
   const handleLogout = () => {
+    localStorage.removeItem('tokenAdega');
+    localStorage.removeItem('idFuncionario');
+    localStorage.removeItem('nomeUsuario');
+    localStorage.removeItem('cargoUsuario');
+    localStorage.removeItem('permissoesUsuario');
     setIsAuthenticated(false)
   }
 

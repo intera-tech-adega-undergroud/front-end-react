@@ -1,4 +1,5 @@
 import { NavLink, Outlet } from 'react-router-dom'
+import { LogOut } from 'lucide-react'
 import iconProduto from "../assets/iconProdutos.svg";
 import iconPerdas from "../assets/iconPerdas.svg"
 import iconDashboard from "../assets/iconDashboard.svg";
@@ -99,9 +100,9 @@ function SystemLayout({ onLogout, nomeUsuario, cargoUsuario, avatarUsuario }) {
             Perfil
           </RouterNavLink>
         </nav>
-        <br/>
         <div className='botoes'>
             <button type="button" onClick={onLogout}>
+              <LogOut size={18} aria-hidden="true" />
               Sair
             </button>
         </div>

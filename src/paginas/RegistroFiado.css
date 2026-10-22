@@ -1,15 +1,24 @@
 .conteudo {
   background-color: #0f1115;
   padding: 25px;
-  min-height: 100%;
+  height: calc(100vh - 62px);
+  min-height: 0;
   box-sizing: border-box;
   color: #ffffff;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
 }
 
 .titulo {
   font-size: 1.7rem;
   font-weight: 700;
-  margin-bottom: 20px;
+  margin-bottom: 10px;
+}
+
+.descricao-registro-fiado {
+  margin-bottom: 10px;
+  color: #c4ccd58e;
 }
 
 .filtros {
@@ -17,6 +26,7 @@
   justify-content: space-between;
   align-items: center;
   margin-top: 20px;
+  flex: 0 0 auto;
 }
 
 /* Status */
@@ -37,8 +47,8 @@
 }
 
 .statusFiado button.active {
-  background: linear-gradient(180deg, #5fff8aaa 0%, #24b94b 100%);
-  color: #fff;
+  background: #3d41478b;
+  color: #d7d8df;
 }
 
 .fiado-pago {
@@ -98,24 +108,27 @@
 }
 
 .btn-cadastrar-cliente {
-  background-color: #1f7a3f;
-  color: #fff;
+  background-color: #5CD26A;
+  color: #1c1f26;
   border: none;
   padding: 8px 16px;
-  border-radius: 6px;
+  border-radius: 10px;
   cursor: pointer;
   font-weight: 600;
-  transition: opacity 0.2s;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  transition: background-color 0.2s ease;
 }
 
 .btn-cadastrar-cliente:hover {
-  opacity: 0.9;
+  background-color: #9fe83b;
 }
 
 .modal-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.75);
+  background: rgba(0, 0, 0, 0.7);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -123,17 +136,27 @@
 }
 
 .modal-box {
-  background: #11161e;
-  border-radius: 16px;
+  background: #1c1f26;
+  border: 1px solid rgba(128, 128, 128, 0.188);
+  border-radius: 8px;
   padding: 28px;
   width: min(520px, 90%);
-  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.35);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.6);
 }
 
 .modal-box h2 {
-  margin-bottom: 24px;
-  color: #fff;
+  margin: 0 0 18px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #2a2d33;
+  color: #f1f1f1;
   text-align: center;
+}
+
+.modal-cliente-titulo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
 }
 
 .modal-input-group {
@@ -144,17 +167,23 @@
 }
 
 .modal-input-group label {
-  color: #b0b9c4;
-  font-size: 0.95rem;
+  color: #cfcece;
+  font-size: 14px;
+  font-weight: 600;
 }
 
 .modal-input-group input {
-  background: #1d2530;
-  border: 1px solid #2f3a47;
-  border-radius: 10px;
-  color: #fff;
-  padding: 12px 14px;
+  background: #2a2d33;
+  border: 1px solid #595e5b56;
+  border-radius: 5px;
+  color: rgba(255, 255, 255, 0.512);
+  padding: 10px;
   outline: none;
+}
+
+.modal-input-group input::placeholder {
+  color: rgba(255, 255, 255, 0.512);
+  opacity: 1;
 }
 
 .modal-actions {
@@ -174,8 +203,8 @@
 }
 
 .btn-salvar {
-  background: #137b2f;
-  color: #fff;
+  background: #B7FE56;
+  color: #1c1f26;
 }
 
 .btn-cancelar {
@@ -186,6 +215,10 @@
 .btn-salvar:hover,
 .btn-cancelar:hover {
   opacity: 0.95;
+}
+
+.btn-salvar:hover {
+  background: #9fe83b;
 }
 
 p {
@@ -202,6 +235,56 @@ body {
   background: #161a2086;
   border-radius: 10px;
   margin-top: 30px;
+}
+
+.conteudo .tabela-container {
+  flex: 1;
+  min-height: 0;
+  margin-top: 20px;
+  overflow: auto;
+}
+
+.estado-erro-fiado {
+  min-height: 200px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 28px 16px;
+  text-align: center;
+  background: radial-gradient(ellipse at center, rgba(31, 42, 40, 0.45), transparent 72%);
+}
+
+.estado-erro-fiado-icone {
+  width: 60px;
+  height: 60px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: rgba(92, 210, 106, 0.16);
+}
+
+.estado-erro-fiado-icone img {
+  width: 28px;
+  height: 28px;
+  object-fit: contain;
+  filter: brightness(0) saturate(100%) invert(85%) sepia(84%) saturate(582%) hue-rotate(32deg) brightness(103%) contrast(103%);
+}
+
+.estado-erro-fiado h2 {
+  margin: 0;
+  color: #f4f6f8;
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.estado-erro-fiado p {
+  max-width: 520px;
+  margin: 0;
+  color: #9ca3af;
+  font-size: 14px;
+  line-height: 1.5;
 }
 
 table {

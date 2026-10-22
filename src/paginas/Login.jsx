@@ -16,7 +16,6 @@ function LoginPage({ onLogin }) {
     event.preventDefault();
     setErroMensagem('');
 
-    /*
     const pacoteLogin = {
       email: email,
       senhaCripto: senha
@@ -66,7 +65,7 @@ function LoginPage({ onLogin }) {
     } catch {
       setErroMensagem('Erro de conexão com o servidor.');
     }
-    */
+  
 
     onLogin();
     navigate('/produtos', { replace: true });

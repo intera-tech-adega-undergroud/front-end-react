@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
+import { FileText, Upload, X } from "lucide-react";
 import Buscar from "../componentes/Buscar";
 import iconCaixaEstoque from "../assets/iconCaixaEstoque.png";
 import "../paginas/Produtos.css";
@@ -18,6 +19,7 @@ function ProductsPage() {
 
   const [modalNotaFiscal, setModalNotaFiscal] = useState(false);
   const [arquivoNotaFiscal, setArquivoNotaFiscal] = useState(null);
+  const [arrastandoArquivo, setArrastandoArquivo] = useState(false);
   const [textoNotaFiscal, setTextoNotaFiscal] = useState("");
   const [carregandoNotaFiscal, setCarregandoNotaFiscal] = useState(false);
   const [itensNotaFiscal, setItensNotaFiscal] = useState([]);
@@ -302,6 +304,26 @@ function ProductsPage() {
     }
 
     setTimeout(() => setMensagem(""), 3000);
+  }
+
+  function selecionarArquivoNotaFiscal(arquivo) {
+    if (!arquivo) return;
+
+    const tipoAceito =
+      arquivo.type === "application/pdf" ||
+      arquivo.type.startsWith("image/") ||
+      /\.(pdf|png|jpe?g|gif|webp|bmp)$/i.test(arquivo.name);
+
+    if (tipoAceito) {
+      setArquivoNotaFiscal(arquivo);
+      setMensagem("");
+    }
+  }
+
+  function receberArquivoNotaFiscal(event) {
+    event.preventDefault();
+    setArrastandoArquivo(false);
+    selecionarArquivoNotaFiscal(event.dataTransfer.files?.[0]);
   }
 
   async function lerNotaFiscal() {
@@ -634,16 +656,80 @@ function ProductsPage() {
               className="modal-caixa modal-caixa-nf"
               onClick={(e) => e.stopPropagation()}
             >
-              <h3>Ler Nota Fiscal</h3>
-
-              <div className="form-group">
-                <label>Arquivo da nota fiscal:</label>
-                <input
-                  type="file"
-                  accept="image/*,.pdf"
-                  onChange={(e) => setArquivoNotaFiscal(e.target.files[0])}
-                />
+              <div className="nota-fiscal-cabecalho">
+                <div className="nota-fiscal-cabecalho-icone">
+                  <FileText size={26} aria-hidden="true" />
+                </div>
+                <div className="nota-fiscal-cabecalho-texto">
+                  <h2>Ler Nota Fiscal</h2>
+                  <p>Selecione ou arraste o arquivo da nota fiscal para leitura e cadastro dos produtos.</p>
+                </div>
+                <button
+                  type="button"
+                  className="nota-fiscal-fechar"
+                  aria-label="Fechar leitura da nota fiscal"
+                  onClick={() => {
+                    if (textoNotaFiscal || itensNotaFiscal.length > 0) {
+                      setConfirmarSaidaNF(true);
+                    } else {
+                      setModalNotaFiscal(false);
+                      setArquivoNotaFiscal(null);
+                      setTextoNotaFiscal("");
+                      setItensNotaFiscal([]);
+                    }
+                  }}
+                >
+                  <X size={18} aria-hidden="true" />
+                </button>
               </div>
+
+              <div
+                className={`nota-fiscal-dropzone${arrastandoArquivo ? " nota-fiscal-dropzone-ativa" : ""}`}
+                onDragEnter={(event) => {
+                  event.preventDefault();
+                  setArrastandoArquivo(true);
+                }}
+                onDragOver={(event) => {
+                  event.preventDefault();
+                  setArrastandoArquivo(true);
+                }}
+                onDragLeave={(event) => {
+                  if (!event.currentTarget.contains(event.relatedTarget)) {
+                    setArrastandoArquivo(false);
+                  }
+                }}
+                onDrop={receberArquivoNotaFiscal}
+              >
+                <input
+                  id="arquivo-nota-fiscal"
+                  type="file"
+                  className="nota-fiscal-input-arquivo"
+                  accept="image/*,.pdf"
+                  onChange={(event) => {
+                    selecionarArquivoNotaFiscal(event.target.files?.[0]);
+                    event.target.value = "";
+                  }}
+                />
+                <label htmlFor="arquivo-nota-fiscal" className="nota-fiscal-dropzone-conteudo">
+                  <span className="nota-fiscal-dropzone-icone">
+                    <FileText size={38} aria-hidden="true" />
+                    <Upload size={20} aria-hidden="true" />
+                  </span>
+                  <span className="nota-fiscal-dropzone-titulo">
+                    Arraste e solte o arquivo da nota fiscal <strong>aqui</strong>
+                  </span>
+                  <span className="nota-fiscal-dropzone-ajuda">
+                    ou <strong>clique para selecionar</strong> o arquivo
+                  </span>
+                  {arquivoNotaFiscal && (
+                    <span className="nota-fiscal-arquivo-selecionado">
+                      {arquivoNotaFiscal.name}
+                    </span>
+                  )}
+                </label>
+              </div>
+
+              <p className="nota-fiscal-formatos">Formatos aceitos: PDF, JPG, PNG e outras imagens</p>
 
               {textoNotaFiscal && (
                 <div className="form-group">
@@ -711,6 +797,7 @@ function ProductsPage() {
                   onClick={lerNotaFiscal}
                   disabled={carregandoNotaFiscal}
                 >
+                  <FileText size={16} aria-hidden="true" />
                   {carregandoNotaFiscal ? "Lendo..." : "Ler NF"}
                 </button>
 
@@ -895,7 +982,11 @@ function ProductsPage() {
               className="modal-caixa modal-caixa-scroll"
               onClick={(e) => e.stopPropagation()}
             >
-              <h3>Novo Produto</h3>
+              <h3 className="modal-titulo-novo-produto">
+                <img src={iconCaixa} alt="" />
+                Novo Produto
+              </h3>
+              <p>Preencha as informações para cadastrar um novo produto no seu estoque</p>
 
               <div className="form-group">
                 <label>Nome:</label>
@@ -1022,11 +1113,15 @@ function ProductsPage() {
       {modalAdicionarEstoque &&
         createPortal(
           <div className="modal-fundo">
-            <div className="modal-caixa">
-              <h3>Adicionar ao Estoque</h3>
+            <div className="modal-caixa modal-caixa-estoque">
+              <h3 className="modal-caixa-titulo-estoque">
+                <img src={iconCaixa} alt="" />
+                Adicionar ao Estoque
+              </h3>
+              <p>Selecione o produto e informe a quantidade</p>
 
               <div className="form-group">
-                <label>Nome:</label>
+                <label>Nome <span>*</span></label>
                 <select
                   value={formAdicionarEstoque.idProduto}
                   onChange={(e) =>
@@ -1046,8 +1141,9 @@ function ProductsPage() {
               </div>
 
               <div className="form-group">
-                <label>Quantidade:</label>
+                <label>Quantidade <span> *</span></label>
                 <input
+                  placeholder="Digite a quantidade"
                   type="number"
                   min="1"
                   value={formAdicionarEstoque.quantidade}
@@ -1057,11 +1153,13 @@ function ProductsPage() {
                       quantidade: e.target.value,
                     })
                   }
+                  
                 />
+                
               </div>
 
               <div className="modal-botoes">
-                <button
+                <button className="btn-cancelar"
                   onClick={() => {
                     setModalAdicionarEstoque(false);
                     setFormAdicionarEstoque({ idProduto: "", quantidade: "" });

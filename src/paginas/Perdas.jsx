@@ -114,6 +114,7 @@ function PerdasPage() {
   return (
     <div className="perdas-container">
       <h1>Perdas</h1>
+      <p className="paragrafo">Registre perdas de produtos e acompanhe os prejuízos da sua adega.</p>
 
       <div className="top-bar">
         <Buscar placeholder="Buscar perda..." onSearch={buscar} />
@@ -126,40 +127,49 @@ function PerdasPage() {
         </button>
       </div>
 
-      <table>
-        <thead>
-          <tr>
-            <th>Produto</th>
-            <th>Qtd perdida</th>
-            <th>Motivo</th>
-            <th>Estoque atual</th>
-            <th>Prejuízo</th>
-            <th>Funcionário</th>
-          </tr>
-        </thead>
-
-        <tbody>
-          {perdas.map((item) => (
-            <tr key={item.id}>
-              <td>{item.nome}</td>
-              <td>{item.quantidade}</td>
-              <td>{item.motivo}</td>
-              <td>{item.estoqueAtual}</td>
-              <td className="prejuizo">
-                R$ {item.prejuizo.toFixed(2)}
-              </td>
-              <td>{item.funcionario}</td>
+      <div className="perdas-table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Produto</th>
+              <th>Qtd perdida</th>
+              <th>Motivo</th>
+              <th>Estoque atual</th>
+              <th>Prejuízo</th>
+              <th>Funcionário</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+
+          <tbody>
+            {perdas.map((item) => (
+              <tr key={item.id}>
+                <td>{item.nome}</td>
+                <td>{item.quantidade}</td>
+                <td>{item.motivo}</td>
+                <td>{item.estoqueAtual}</td>
+                <td className="prejuizo">
+                  R$ {item.prejuizo.toFixed(2)}
+                </td>
+                <td>{item.funcionario}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
 
       <div className="mensagem">{mensagem}</div>
 
       {modalAdicionar && createPortal(
         <div className="modal-fundo">
           <div className="modal-caixa">
-            <h3>Registrar Perda</h3>
+            <h3 className="modal-perda-titulo">
+              <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                <path d="M9 2h6l-1 2 1 2-2 1-1-1-1 1-2-1 1-2-1-2Z" />
+                <path d="M9 7v3l-3 8a2 2 0 0 0 2 3h8a2 2 0 0 0 2-3l-3-8V7" />
+                <path d="m13 8-2 3 3 2-2 3 1 2" />
+              </svg>
+              Registrar Perda
+            </h3>
 
             <div className="form-group">
               <label>Produto:</label>

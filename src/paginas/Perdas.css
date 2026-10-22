@@ -1,13 +1,23 @@
 .perdas-container {
   background: #0f1115;
   color: white;
-  padding: 40px;
-  min-height: 100vh;
+  padding: 25px;
+  height: calc(100vh - 62px);
+  min-height: 0;
   font-family: Arial, Helvetica, sans-serif;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
 }
 
 h1 {
-  margin-bottom: 20px;
+  margin-bottom: 10px;
+  font-size: 30px;
+}
+
+.perdas-container .paragrafo {
+  margin-bottom: 30px;
+  color: #c4ccd58e;
 }
 
 .top-bar {
@@ -17,16 +27,17 @@ h1 {
 }
 
 .btn-adicionar {
-  background: #1f7a4c;
-  color: white;
+  background-color: #5CD26A;
+  color: #1c1f26;
+  font-weight: 600;
   padding: 10px 16px;
   border: none;
-  border-radius: 6px;
+  border-radius: 10px;
   cursor: pointer;
 }
 
 .btn-adicionar:hover {
-  background: #24945d;
+  background: #89d347;
 }
 
 table {
@@ -35,6 +46,17 @@ table {
   background: #16181d;
   border-radius: 8px;
   overflow: hidden;
+}
+
+.perdas-table-wrap {
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+  border-radius: 8px;
+}
+
+.perdas-container > .mensagem:empty {
+  display: none;
 }
 
 th {
@@ -94,6 +116,24 @@ td {
   text-align: center;
 }
 
+.modal-perda-titulo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+
+.modal-perda-titulo svg {
+  width: 24px;
+  height: 24px;
+  flex: 0 0 24px;
+  fill: none;
+  stroke: #b7fe56;
+  stroke-width: 1.7;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
 .form-group {
   display: flex;
   flex-direction: column;
@@ -135,6 +175,7 @@ td {
 }
 
 .modal-botoes button {
+  width: 50%;
   cursor: pointer;
   border: none;
   background: #2a2d33;
@@ -143,14 +184,19 @@ td {
   border-radius: 4px;
 }
 
+.modal-caixa .modal-botoes button:first-child {
+  border: 1px solid #777;
+}
+
 .modal-botoes button:hover {
   background: #3a3e45;
 }
 
 .modal-botoes .btn-salvar {
-  background: #1f7a4c;
+  background: #B7FE56;
+  color: #1c1f26;
 }
 
 .modal-botoes .btn-salvar:hover {
-  background: #24945d;
+  background: #9fe83b;
 }

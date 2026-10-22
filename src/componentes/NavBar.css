@@ -26,6 +26,8 @@
     margin: 0;
     height: 100vh;
     overflow-y: auto;
+    display: flex;
+    flex-direction: column;
 
 }
 
@@ -86,16 +88,25 @@
     object-fit: contain;
 }
 .botoes{
-padding-left: 20px;
+    display: flex;
+    justify-content: center;
+    margin-top: auto;
+    padding: 0 0 20px;
 }
 
 .sidebar .botoes button{
-    width: 30%;
+    width: 100%;
     background-color: #424242;
     border: none;
     color: white;
-    border-radius: 5px;
-    height: 25px;
+    border-radius: 10px;
+    height: 40px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    font-weight: 600;
+    transition: background-color 0.3s ease;
 }
 
 .sidebar .botoes button:hover{

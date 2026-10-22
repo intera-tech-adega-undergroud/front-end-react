@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
+import { User, UserPlus } from "lucide-react";
 import "./RegistroFiado.css";
 import LinhaFiado from "../componentes/LinhaFiado";
+import iconMoney from "../assets/iconMoney.svg";
 
 function CreditRecordPage() {
   const [status, setStatus] = useState("Todos");
@@ -216,8 +218,13 @@ function CreditRecordPage() {
     <>
       <main className="conteudo">
         <h1 className="titulo">Registro Fiado</h1>
+        <p className="descricao-registro-fiado">
+          Registre e acompanhe as vendas fiadas da sua adega, mantendo o controle dos valores pendentes e dos pagamentos realizados.
+        </p>
 
-        {mensagem && <p className="erro-pagamento">{mensagem}</p>}
+        {mensagem && mensagem !== "Erro ao carregar registros de fiado." && (
+          <p className="erro-pagamento">{mensagem}</p>
+        )}
 
         <div className="filtros">
           <div className="cadastroCliente">
@@ -225,6 +232,7 @@ function CreditRecordPage() {
               className="btn-cadastrar-cliente"
               onClick={() => setMostrarModalCliente(true)}
             >
+              <UserPlus size={18} strokeWidth={2.5} aria-hidden="true" />
               Cadastrar Cliente Fiado
             </button>
           </div>
@@ -259,7 +267,10 @@ function CreditRecordPage() {
             onClick={() => setMostrarModalCliente(false)}
           >
             <div className="modal-box" onClick={(e) => e.stopPropagation()}>
-              <h2>Cadastrar Cliente Fiado</h2>
+              <h2 className="modal-cliente-titulo">
+                <User size={22} color="#B7FE56" aria-hidden="true" />
+                Cadastrar Cliente Fiado
+              </h2>
 
               <div className="modal-input-group">
                 <label>Nome cliente</label>
@@ -338,19 +349,19 @@ function CreditRecordPage() {
 
               <div className="modal-actions">
                 <button
-                  className="btn-salvar"
-                  onClick={salvarCliente}
-                  disabled={salvandoCliente}
-                >
-                  {salvandoCliente ? "Salvando..." : "Salvar"}
-                </button>
-
-                <button
                   className="btn-cancelar"
                   onClick={() => setMostrarModalCliente(false)}
                   disabled={salvandoCliente}
                 >
                   Cancelar
+                </button>
+
+                <button
+                  className="btn-salvar"
+                  onClick={salvarCliente}
+                  disabled={salvandoCliente}
+                >
+                  {salvandoCliente ? "Salvando..." : "Salvar"}
                 </button>
               </div>
             </div>
@@ -455,6 +466,18 @@ function CreditRecordPage() {
               {carregando ? (
                 <tr>
                   <td colSpan="5">Carregando fiados...</td>
+                </tr>
+              ) : mensagem === "Erro ao carregar registros de fiado." ? (
+                <tr>
+                  <td colSpan="5">
+                    <section className="estado-erro-fiado" role="alert">
+                      <div className="estado-erro-fiado-icone">
+                        <img src={iconMoney} alt="" />
+                      </div>
+                      <h2>Erro ao carregar registros de fiado</h2>
+                      <p>Não foi possível carregar os registros agora. Tente novamente em instantes.</p>
+                    </section>
+                  </td>
                 </tr>
               ) : dadosFiltrados.length === 0 ? (
                 <tr>

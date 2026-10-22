@@ -316,7 +316,8 @@ function DashboardPage() {
       <div className="section-dash">
         <h1 className="dashboard-page-title">Dashboard</h1>
         <div className="btns-dash">
-            <BotaoDashboard />
+          <BotaoDashboard texto="Visão Geral" ativo />
+            <BotaoDashboard texto='Produtos' />
             <BotaoDashboard texto="Vendas" />
         </div>
       </div>

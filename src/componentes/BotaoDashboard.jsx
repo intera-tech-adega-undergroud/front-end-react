@@ -1,9 +1,9 @@
 import "./BotaoDashboard.css";
 
-function BotaoCobrar({ onClick, texto = "Produtos" }) {
+function BotaoCobrar({ onClick, texto = "Produtos", ativo = false }) {
 
   return (
-    <button className="btn-dashboard" onClick={onClick}>
+    <button className={`btn-dashboard${ativo ? " active" : ""}`} onClick={onClick}>
       {texto}
     </button>
   );

@@ -1,5 +1,6 @@
 import { useState } from "react";
 import "../paginas/Colaboradores.css";
+import api from "../services/api";
 
 function EmployeesPage() {
 
@@ -141,13 +142,9 @@ function EmployeesPage() {
     setEnviando(true);
 
     try {
-      const resposta = await fetch("http://localhost:8080/funcionarios", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${localStorage.getItem("tokenAdega")}`,
-        },
-        body: JSON.stringify({
+      await api.post(
+        "/funcionarios",
+        {
           nome,
           sobrenome,
           cpf,
@@ -155,23 +152,30 @@ function EmployeesPage() {
           celular: telefone,
           senha,
           permissoes,
-        }),
-      });
-
-      if (!resposta.ok) {
-        let mensagem = "Não foi possível cadastrar o usuário";
-        if (resposta.status === 401) mensagem = "Sessão expirada, faça login novamente";
-        else if (resposta.status === 403 && !resposta.headers.get("content-type")?.includes("json")) {
-          mensagem = "Você não tem permissão para cadastrar usuários";
-        } else {
-          const corpo = await resposta.json().catch(() => null);
-          if (corpo?.message) mensagem = corpo.message;
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("tokenAdega")}`,
+          },
         }
-        mostrarErro(mensagem);
+      );
+    } catch (erro) {
+      const resposta = erro.response;
+
+      if (!resposta) {
+        mostrarErro("Erro de conexão com o servidor");
         return;
       }
-    } catch {
-      mostrarErro("Erro de conexão com o servidor");
+
+      let mensagem = "Não foi possível cadastrar o usuário";
+      if (resposta.status === 401) mensagem = "Sessão expirada, faça login novamente";
+      else if (resposta.status === 403 && !String(resposta.headers["content-type"] ?? "").includes("json")) {
+        mensagem = "Você não tem permissão para cadastrar usuários";
+      } else {
+        const corpo = resposta.data;
+        if (corpo?.message) mensagem = corpo.message;
+      }
+      mostrarErro(mensagem);
       return;
     } finally {
       setEnviando(false);

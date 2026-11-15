@@ -12,6 +12,7 @@ import { TrendingUp } from 'lucide-react'
 import avatarPadrao from '../assets/avatarPadrao.svg'
 import BotaoDashboard from '../componentes/BotaoDashboard'
 import './Dashboard.css'
+import api from '../services/api'
 
 
 
@@ -91,25 +92,24 @@ function DashboardPage() {
 
     try {
 
-      const response = await fetch(
-        `http://localhost:8080/eventos/grafico-dashboard?dataInicio=${startDate}&dataFim=${endDate}`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`
-          }
+      const response = await api.get('/eventos/grafico-dashboard', {
+        params: {
+          dataInicio: startDate,
+          dataFim: endDate
+        },
+        headers: {
+          Authorization: `Bearer ${token}`
         }
-      )
+      })
 
       if (response.status === 204) {
         setChartData([])
         return
       }
 
-      if (!response.ok) {
-        throw new Error('Erro ao buscar gráfico')
-      }
+      // Status de erro (4xx/5xx) agora lança exceção no Axios e cai no catch abaixo
 
-      const dados = await response.json()
+      const dados = response.data
 
       const dadosFormatados = dados.map(item => {
 
@@ -140,21 +140,18 @@ function DashboardPage() {
 
     try {
 
-      const response = await fetch(
-        'http://localhost:8080/eventos/ranking-funcionarios',
-        {
-          headers: {
-            Authorization: `Bearer ${token}`
-          }
+      const response = await api.get('/eventos/ranking-funcionarios', {
+        headers: {
+          Authorization: `Bearer ${token}`
         }
-      )
+      })
 
       if (response.status === 204) {
         setRankingData([])
         return
       }
 
-      const dados = await response.json()
+      const dados = response.data
 
       const rankingFormatado = dados.map(item => ({
         nome: item.vendedor,
@@ -175,20 +172,17 @@ function DashboardPage() {
 
     try {
 
-      const response = await fetch(
-        'http://localhost:8080/eventos/vendas-mes',
-        {
-          headers: {
-            Authorization: `Bearer ${token}`
-          }
+      const response = await api.get('/eventos/vendas-mes', {
+        headers: {
+          Authorization: `Bearer ${token}`
         }
-      )
+      })
 
       if (response.status === 204) {
         return
       }
 
-      const dados = await response.json()
+      const dados = response.data
 
       setVendasMes(dados)
 
@@ -203,20 +197,17 @@ function DashboardPage() {
 
     try {
 
-      const response = await fetch(
-        'http://localhost:8080/eventos/faturamento-dia',
-        {
-          headers: {
-            Authorization: `Bearer ${token}`
-          }
+      const response = await api.get('/eventos/faturamento-dia', {
+        headers: {
+          Authorization: `Bearer ${token}`
         }
-      )
+      })
 
       if (response.status === 204) {
         return
       }
 
-      const dados = await response.json()
+      const dados = response.data
 
       setFaturamentoDia(dados)
 

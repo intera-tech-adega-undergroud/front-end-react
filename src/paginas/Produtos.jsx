@@ -5,6 +5,7 @@ import Buscar from "../componentes/Buscar";
 import iconCaixaEstoque from "../assets/iconCaixaEstoque.png";
 import "../paginas/Produtos.css";
 import iconCaixa from "../assets/iconCaixa.png";
+import api, { textoDoErro, API_TIMEOUT_UPLOAD_MS } from "../services/api";
 
 function ProductsPage() {
   const [produtos, setProdutos] = useState([]);
@@ -61,23 +62,17 @@ function ProductsPage() {
     const token = localStorage.getItem("tokenAdega");
 
     try {
-      const resposta = await fetch("http://localhost:8080/produtos", {
-        method: "GET",
+      const resposta = await api.get("/produtos", {
         headers: {
-          "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
       });
-
-      if (!resposta.ok) {
-        const erroTexto = await resposta.text();
-        console.log("STATUS PRODUTOS:", resposta.status);
-        console.log("ERRO BACKEND PRODUTOS:", erroTexto);
-        throw new Error("Erro ao buscar produtos");
-      }
-      const dados = await resposta.json();
-      setProdutos(dados);
+      setProdutos(resposta.data);
     } catch (error) {
+      if (error.response) {
+        console.log("STATUS PRODUTOS:", error.response.status);
+        console.log("ERRO BACKEND PRODUTOS:", textoDoErro(error.response.data));
+      }
       console.error("Erro de conexão com o servidor.", error);
       setMensagem("Erro ao carregar produtos.");
     }
@@ -131,21 +126,11 @@ function ProductsPage() {
     };
 
     try {
-      const resposta = await fetch(
-        `http://localhost:8080/produtos/${formEditar.idProduto}`,
-        {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify(produto),
-        }
-      );
-
-      if (!resposta.ok) {
-        throw new Error("Erro ao editar produto");
-      }
+      await api.put(`/produtos/${formEditar.idProduto}`, produto, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
 
       setModalEditar(false);
       setMensagem("Produto editado com sucesso!");
@@ -179,17 +164,11 @@ function ProductsPage() {
     const id = produtoParaExcluir.idProduto;
 
     try {
-      const resposta = await fetch(`http://localhost:8080/produtos/${id}`, {
-        method: "DELETE",
+      await api.delete(`/produtos/${id}`, {
         headers: {
-          "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
       });
-
-      if (!resposta.ok) {
-        throw new Error("Erro ao deletar produto no servidor.");
-      }
 
       setMensagem("Produto excluído com sucesso!");
       setModalExcluir(false);
@@ -224,25 +203,19 @@ function ProductsPage() {
     console.log("PRODUTO ENVIADO:", produto);
 
     try {
-      const resposta = await fetch("http://localhost:8080/produtos", {
-        method: "POST",
+      await api.post("/produtos", produto, {
         headers: {
-          "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify(produto),
       });
-
-      if (!resposta.ok) {
-        const erroTexto = await resposta.text();
-        console.log("ERRO BACKEND:", erroTexto);
-        throw new Error("Erro ao cadastrar produto");
-      }
 
       setMensagem("Produto cadastrado com sucesso!");
       setModalAdicionar(false);
       carregarProdutos();
     } catch (error) {
+      if (error.response) {
+        console.log("ERRO BACKEND:", textoDoErro(error.response.data));
+      }
       console.error(error);
       setMensagem("Erro ao cadastrar produto");
     }
@@ -266,21 +239,15 @@ function ProductsPage() {
     }
 
     try {
-      const resposta = await fetch(
-        `http://localhost:8080/produtos/${formAdicionarEstoque.idProduto}/entrada`,
+      await api.patch(
+        `/produtos/${formAdicionarEstoque.idProduto}/entrada`,
+        { quantidade: formAdicionarEstoque.quantidade },
         {
-          method: "PATCH",
           headers: {
-            "Content-Type": "application/json",
             Authorization: `Bearer ${token}`,
           },
-          body: JSON.stringify({ quantidade: formAdicionarEstoque.quantidade }),
         }
       );
-
-      if (!resposta.ok) {
-        throw new Error("Erro ao adicionar estoque");
-      }
 
       setModalAdicionarEstoque(false);
       setMensagem("Estoque abastecido com sucesso!");
@@ -341,19 +308,15 @@ function ProductsPage() {
       setCarregandoNotaFiscal(true);
       setMensagem("Lendo nota fiscal...");
 
-      const resposta = await fetch("http://localhost:8080/notas-fiscais/ocr", {
-        method: "POST",
+      // O Axios define o Content-Type multipart (com boundary) automaticamente para FormData
+      const resposta = await api.post("/notas-fiscais/ocr", formData, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
-        body: formData,
+        timeout: API_TIMEOUT_UPLOAD_MS,
       });
 
-      if (!resposta.ok) {
-        throw new Error("Erro ao ler nota fiscal");
-      }
-
-      const dados = await resposta.json();
+      const dados = resposta.data;
 
       setTextoNotaFiscal(dados.textoExtraido);
       identificarProdutosNaNota(dados.textoExtraido);
@@ -486,22 +449,18 @@ function ProductsPage() {
 
     try {
       for (const item of itensNotaFiscal) {
-        const resposta = await fetch(
-          `http://localhost:8080/produtos/${item.idProduto}/entrada`,
-          {
-            method: "PATCH",
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${token}`,
-            },
-            body: JSON.stringify({
-              quantidade: item.quantidade,
-            }),
-          }
-        );
-
-        if (!resposta.ok) {
-          throw new Error(`Erro ao atualizar estoque de ${item.nome}`);
+        try {
+          await api.patch(
+            `/produtos/${item.idProduto}/entrada`,
+            { quantidade: item.quantidade },
+            {
+              headers: {
+                Authorization: `Bearer ${token}`,
+              },
+            }
+          );
+        } catch (erro) {
+          throw new Error(`Erro ao atualizar estoque de ${item.nome}`, { cause: erro });
         }
       }
 

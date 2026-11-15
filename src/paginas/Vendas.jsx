@@ -3,6 +3,7 @@ import { Plus, ShoppingCart, Trash2, User } from "lucide-react";
 import Buscar from "../componentes/Buscar";
 import iconMoney from "../assets/iconMoney.svg";
 import "./Vendas.css";
+import api, { textoDoErro } from "../services/api";
 
 function VendasPage() {
   const [produtosBanco, setProdutosBanco] = useState([])
@@ -30,23 +31,14 @@ function VendasPage() {
             "tokenAdega"
           )
 
-        const resposta = await fetch(
-          "http://localhost:8080/produtos",
-          {
-            headers: {
-              Authorization:
-                `Bearer ${token}`
-            }
+        const resposta = await api.get("/produtos", {
+          headers: {
+            Authorization:
+              `Bearer ${token}`
           }
-        )
+        })
 
-        if (resposta.ok) {
-
-          const dados =
-            await resposta.json()
-
-          setProdutosBanco(dados)
-        }
+        setProdutosBanco(resposta.data)
 
       } catch (erro) {
 
@@ -70,24 +62,14 @@ function VendasPage() {
             "tokenAdega"
           )
 
-        const response =
-          await fetch(
-            "http://localhost:8080/clientes",
-            {
-              headers: {
-                Authorization:
-                  `Bearer ${token}`
-              }
-            }
-          )
+        const response = await api.get("/clientes", {
+          headers: {
+            Authorization:
+              `Bearer ${token}`
+          }
+        })
 
-        if (response.ok) {
-
-          const dados =
-            await response.json()
-
-          setClientes(dados)
-        }
+        setClientes(response.data)
 
       } catch (erro) {
 
@@ -275,34 +257,14 @@ function VendasPage() {
           }))
       }
 
-      const response = await fetch(
-        "http://localhost:8080/eventos/venda",
-        {
-          method: "POST",
-
-          headers: {
-            "Content-Type":
-              "application/json",
-
-            Authorization:
-              `Bearer ${token}`
-          },
-
-          body:
-            JSON.stringify(venda)
+      await api.post("/eventos/venda", venda, {
+        headers: {
+          Authorization:
+            `Bearer ${token}`
         }
-      )
+      })
 
       console.log(venda)
-
-      if (!response.ok) {
-
-        const erro = await response.text();
-
-        console.error("Erro backend:", erro);
-
-        throw new Error(erro);
-      }
 
       setCarrinho([])
 
@@ -322,6 +284,10 @@ function VendasPage() {
       )
 
     } catch (erro) {
+
+      if (erro.response) {
+        console.error("Erro backend:", textoDoErro(erro.response.data))
+      }
 
       console.error(erro)
 

@@ -3,6 +3,7 @@ import { User, UserPlus } from "lucide-react";
 import "./RegistroFiado.css";
 import LinhaFiado from "../componentes/LinhaFiado";
 import iconMoney from "../assets/iconMoney.svg";
+import api from "../services/api";
 
 function CreditRecordPage() {
   const [status, setStatus] = useState("Todos");
@@ -30,8 +31,6 @@ function CreditRecordPage() {
   const [paginaAtual, setPaginaAtual] = useState(1);
   const registrosPorPagina = 5;
 
-  const API_URL = "http://localhost:8080";
-
   const buscarFiados = async () => {
     try {
       setCarregando(true);
@@ -39,19 +38,13 @@ function CreditRecordPage() {
 
       const token = localStorage.getItem("tokenAdega");
 
-      const resposta = await fetch("http://localhost:8080/fiados", {
-        method: "GET",
+      const resposta = await api.get("/fiados", {
         headers: {
-          "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
       });
 
-      if (!resposta.ok) {
-        throw new Error("Erro ao buscar fiados");
-      }
-
-      const resultado = await resposta.json();
+      const resultado = resposta.data;
 
       console.log("FIADOS DO BACKEND:", resultado);
 
@@ -100,22 +93,19 @@ function CreditRecordPage() {
     try {
       const token = localStorage.getItem("tokenAdega");
 
-      const resposta = await fetch(`${API_URL}/fiados/pagamento`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({
+      await api.post(
+        "/fiados/pagamento",
+        {
           idCliente: registroSelecionado.idCliente,
           valorPagamento: valorNum,
           formaPagamento: formaPagamento,
-        }),
-      });
-
-      if (!resposta.ok) {
-        throw new Error("Erro ao registrar pagamento");
-      }
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
 
       fecharModalCobrar();
       await buscarFiados();
@@ -137,17 +127,8 @@ function CreditRecordPage() {
     try {
       setSalvandoCliente(true);
 
-      const resposta = await fetch(`${API_URL}/clientes`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(novoCliente),
-      });
-
-      if (!resposta.ok) {
-        throw new Error("Erro ao cadastrar cliente");
-      }
+      // Mantido sem Authorization, como no código original
+      await api.post("/clientes", novoCliente);
 
       setNovoCliente({
         nome: "",
